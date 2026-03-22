@@ -1,13 +1,21 @@
 # Changelog
 
+## [1.3.0] - 2026-03-22
+
+### Changed
+
+- **Filter toggle icons** — filter buttons now visually change between filled (active) and outline (inactive) to show current state
+- **Renamed "Other" filter to "Pending"** — clearer label indicating tests that have not yet been run
+- **Simplified coverage display** — removed threshold indicator and "Tests with coverage" metric; coverage bar now uses a neutral color with just the percentage
+
 ## [1.2.0] - 2026-03-22
 
 ### Added
 
-- **Filter toggles** — toolbar buttons to show/hide passed, failed, or other (stale/unknown/skipped) tests in the tree view
+- **Filter toggles** — toolbar buttons to show/hide passed, failed, or pending tests in the tree view
 - **Settings icon** — gear icon in the test tree title bar opens extension settings
 - **Pinned tests** — pin individual tests or entire classes; pinned tests sort to top and persist across sessions
-- **Coverage line totals** — metrics panel now shows "covered / total (X%)" with a color-coded progress bar and threshold indicator
+- **Coverage line totals** — metrics panel now shows "covered / total (X%)" with a progress bar
 
 ### Fixed
 

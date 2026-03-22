@@ -2,7 +2,7 @@
   "name": "dotnet-crunch",
   "displayName": "DotNet Crunch",
   "description": "Continuous testing engine for C#/.NET — inspired by NCrunch. Automatic test execution, per-line coverage gutter markers, impact analysis, and a real-time test sidebar.",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "publisher": "Oliver Venndt",
   "author": {
     "name": "Oliver Venndt"
