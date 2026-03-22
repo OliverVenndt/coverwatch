@@ -51,12 +51,17 @@ export class CoverageStore {
           // Resolve to absolute path
           const sources = this.ensureArray(coverage.sources?.source ?? []);
           let filePath = fileName;
+          let resolved = false;
           for (const src of sources) {
             const candidate = path.resolve(String(src), fileName);
             if (fs.existsSync(candidate)) {
               filePath = candidate;
+              resolved = true;
               break;
             }
+          }
+          if (!resolved) {
+            log(`Coverage: could not resolve path "${fileName}" (sources: ${sources.join(', ')})`);
           }
 
           const lines: LineCoverage[] = [];

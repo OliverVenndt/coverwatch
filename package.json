@@ -1,8 +1,8 @@
 {
   "name": "coverwatch",
-  "displayName": "Coverwatch \u2014 .NET Continuous Testing",
+  "displayName": "Coverwatch - .NET Continuous Testing",
   "description": "Continuous testing engine for C#/.NET. Automatic test execution, per-line coverage gutter markers, impact analysis, and a real-time test sidebar.",
-  "version": "1.6.0",
+  "version": "1.7.2",
   "publisher": "OliverVenndt",
   "author": {
     "name": "Oliver Venndt"
