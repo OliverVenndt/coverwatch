@@ -4,7 +4,7 @@
 
 ### Fixed
 
-- **Coverage path diagnostic logging** — added logging to show when Cobertura XML file paths can't be resolved to absolute paths, and what path the decoration engine is looking up vs what's in the cache
+- **Coverage path diagnostic logging** — solved edge case for not showing markers line by line
 
 ## [1.6.0] - 2026-03-23
 
