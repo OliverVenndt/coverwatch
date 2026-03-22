@@ -219,14 +219,9 @@
           "group": "navigation@1"
         },
         {
-          "command": "coverwatch.runAll",
-          "when": "view == coverwatch.tests && coverwatch.running",
-          "group": "navigation@2"
-        },
-        {
           "command": "coverwatch.resetCoverage",
           "when": "view == coverwatch.tests",
-          "group": "navigation@3"
+          "group": "navigation@2"
         },
         {
           "command": "coverwatch.filterPassed",
@@ -262,6 +257,11 @@
           "command": "coverwatch.openSettings",
           "when": "view == coverwatch.tests",
           "group": "navigation@13"
+        },
+        {
+          "command": "coverwatch.runAll",
+          "when": "view == coverwatch.tests && coverwatch.running",
+          "group": "1_actions"
         }
       ],
       "view/item/context": [
