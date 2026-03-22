@@ -48,7 +48,7 @@ export class StatusBar implements vscode.Disposable {
         stateText = 'Stopped';
     }
 
-    let text = `${icon} Crunch`;
+    let text = `${icon} Coverwatch`;
 
     if (total > 0 && state !== EngineState.Stopped) {
       const parts: string[] = [];

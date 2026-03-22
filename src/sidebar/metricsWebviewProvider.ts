@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { TestDiscovery } from '../testDiscovery';
 import { CoverageStore } from '../coverageMap';
-import { TestStatus, CrunchConfig, EngineState } from '../types';
+import { TestStatus, CoverwatchConfig, EngineState } from '../types';
 
 /**
  * Provides a webview panel in the sidebar with real-time metrics:
@@ -18,7 +18,7 @@ export class MetricsWebviewProvider implements vscode.WebviewViewProvider {
   constructor(
     private testDiscovery: TestDiscovery,
     private coverageStore: CoverageStore,
-    private config: CrunchConfig,
+    private config: CoverwatchConfig,
     private extensionUri: vscode.Uri,
   ) {}
 
@@ -223,7 +223,7 @@ export class MetricsWebviewProvider implements vscode.WebviewViewProvider {
 </html>`;
   }
 
-  updateConfig(config: CrunchConfig): void {
+  updateConfig(config: CoverwatchConfig): void {
     this.config = config;
   }
 

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { loadConfig, EngineState, CrunchConfig } from './types';
+import { loadConfig, EngineState, CoverwatchConfig } from './types';
 import { initLogger, log, logError, setVerbose } from './logger';
 import { TestDiscovery } from './testDiscovery';
 import { CoverageStore } from './coverageMap';
@@ -13,7 +13,7 @@ import { QueueTreeProvider } from './sidebar/queueTreeProvider';
 import { MetricsWebviewProvider } from './sidebar/metricsWebviewProvider';
 import { StatusBar } from './statusBar';
 
-let engine: CrunchEngine | undefined;
+let engine: CoverwatchEngine | undefined;
 
 function extractTestId(arg: unknown): string | undefined {
   if (typeof arg === 'string') { return arg; }
@@ -39,7 +39,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   log('Coverwatch activating...');
 
-  engine = new CrunchEngine(context, config, outputChannel);
+  engine = new CoverwatchEngine(context, config, outputChannel);
 
   // Register commands
   context.subscriptions.push(
@@ -110,7 +110,7 @@ export function deactivate(): void {
 /**
  * The core engine that orchestrates all components.
  */
-class CrunchEngine implements vscode.Disposable {
+class CoverwatchEngine implements vscode.Disposable {
   private state: EngineState = EngineState.Stopped;
   private disposables: vscode.Disposable[] = [];
 
@@ -131,7 +131,7 @@ class CrunchEngine implements vscode.Disposable {
 
   constructor(
     private context: vscode.ExtensionContext,
-    private config: CrunchConfig,
+    private config: CoverwatchConfig,
     private outputChannel: vscode.OutputChannel,
   ) {
     // Initialize core
@@ -450,7 +450,7 @@ class CrunchEngine implements vscode.Disposable {
   /**
    * Update configuration.
    */
-  updateConfig(config: CrunchConfig): void {
+  updateConfig(config: CoverwatchConfig): void {
     this.config = config;
     setVerbose(config.verboseOutput);
     this.testDiscovery.updateConfig(config);

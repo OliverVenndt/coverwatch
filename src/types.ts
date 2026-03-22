@@ -108,7 +108,7 @@ export enum EngineState {
 }
 
 // ── Configuration ────────────────────────────────────────────────────
-export interface CrunchConfig {
+export interface CoverwatchConfig {
   autoStart: boolean;
   debounceMs: number;
   runOnSave: boolean;
@@ -124,7 +124,7 @@ export interface CrunchConfig {
   verboseOutput: boolean;
 }
 
-export function loadConfig(): CrunchConfig {
+export function loadConfig(): CoverwatchConfig {
   const cfg = vscode.workspace.getConfiguration('coverwatch');
   return {
     autoStart: cfg.get<boolean>('autoStart', true),

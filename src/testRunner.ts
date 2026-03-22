@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import { XMLParser } from 'fast-xml-parser';
 import {
-  TestResult, TestStatus, QueueItem, CrunchConfig, FileCoverage,
+  TestResult, TestStatus, QueueItem, CoverwatchConfig, FileCoverage,
 } from './types';
 import { CoverageStore } from './coverageMap';
 import { TestDiscovery } from './testDiscovery';
@@ -34,7 +34,7 @@ export class TestRunner {
   readonly onRunComplete = this._onRunComplete.event;
 
   constructor(
-    private config: CrunchConfig,
+    private config: CoverwatchConfig,
     private coverageStore: CoverageStore,
     private testDiscovery: TestDiscovery,
   ) {}
@@ -443,7 +443,7 @@ export class TestRunner {
     this._onQueueChanged.fire(this.queue);
   }
 
-  updateConfig(config: CrunchConfig): void {
+  updateConfig(config: CoverwatchConfig): void {
     this.config = config;
   }
 

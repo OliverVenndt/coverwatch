@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { CrunchConfig } from './types';
+import { CoverwatchConfig } from './types';
 import { logVerbose } from './logger';
 
 /**
@@ -18,7 +18,7 @@ export class FileWatcher implements vscode.Disposable {
   }>();
   readonly onFileChanged = this._onFileChanged.event;
 
-  constructor(private config: CrunchConfig) {}
+  constructor(private config: CoverwatchConfig) {}
 
   /**
    * Start watching for .cs file changes.
@@ -127,7 +127,7 @@ export class FileWatcher implements vscode.Disposable {
     return true;
   }
 
-  updateConfig(config: CrunchConfig): void {
+  updateConfig(config: CoverwatchConfig): void {
     this.config = config;
     // Restart with new config
     this.start();

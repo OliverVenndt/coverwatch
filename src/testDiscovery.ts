@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as cp from 'child_process';
-import { TestInfo, TestProject, TestStatus, CrunchConfig } from './types';
+import { TestInfo, TestProject, TestStatus, CoverwatchConfig } from './types';
 import { log, logVerbose, logError } from './logger';
 
 /**
@@ -10,7 +10,7 @@ import { log, logVerbose, logError } from './logger';
 export class TestDiscovery {
   private projects: Map<string, TestProject> = new Map();
 
-  constructor(private config: CrunchConfig) {}
+  constructor(private config: CoverwatchConfig) {}
 
   get testProjects(): Map<string, TestProject> {
     return this.projects;
@@ -303,7 +303,7 @@ export class TestDiscovery {
     logVerbose(`Resolved source locations for ${resolvedCount}/${project.tests.size} tests in ${project.name}`);
   }
 
-  updateConfig(config: CrunchConfig): void {
+  updateConfig(config: CoverwatchConfig): void {
     this.config = config;
   }
 }

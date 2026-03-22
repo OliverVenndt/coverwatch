@@ -2,7 +2,7 @@
   "name": "coverwatch",
   "displayName": "Coverwatch \u2014 .NET Continuous Testing",
   "description": "Continuous testing engine for C#/.NET — inspired by NCrunch. Automatic test execution, per-line coverage gutter markers, impact analysis, and a real-time test sidebar.",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "publisher": "oliver-venndt",
   "author": {
     "name": "Oliver Venndt"
@@ -99,37 +99,37 @@
         "command": "coverwatch.filterPassed",
         "title": "Hide Passed Tests",
         "category": "Coverwatch",
-        "icon": "$(pass-filled)"
+        "icon": "$(check)"
       },
       {
         "command": "coverwatch.filterPassedOff",
         "title": "Show Passed Tests",
         "category": "Coverwatch",
-        "icon": "$(pass)"
+        "icon": "$(dash)"
       },
       {
         "command": "coverwatch.filterFailed",
         "title": "Hide Failed Tests",
         "category": "Coverwatch",
-        "icon": "$(error)"
+        "icon": "$(x)"
       },
       {
         "command": "coverwatch.filterFailedOff",
         "title": "Show Failed Tests",
         "category": "Coverwatch",
-        "icon": "$(circle-large-outline)"
+        "icon": "$(dash)"
       },
       {
         "command": "coverwatch.filterPending",
         "title": "Hide Pending Tests",
         "category": "Coverwatch",
-        "icon": "$(clock)"
+        "icon": "$(ellipsis)"
       },
       {
         "command": "coverwatch.filterPendingOff",
         "title": "Show Pending Tests",
         "category": "Coverwatch",
-        "icon": "$(circle-outline)"
+        "icon": "$(dash)"
       },
       {
         "command": "coverwatch.pinTest",
@@ -231,37 +231,37 @@
         {
           "command": "coverwatch.filterPassed",
           "when": "view == coverwatch.tests && coverwatch.filterPassed",
-          "group": "navigation"
+          "group": "navigation@10"
         },
         {
           "command": "coverwatch.filterPassedOff",
           "when": "view == coverwatch.tests && !coverwatch.filterPassed",
-          "group": "navigation"
+          "group": "navigation@10"
         },
         {
           "command": "coverwatch.filterFailed",
           "when": "view == coverwatch.tests && coverwatch.filterFailed",
-          "group": "navigation"
+          "group": "navigation@11"
         },
         {
           "command": "coverwatch.filterFailedOff",
           "when": "view == coverwatch.tests && !coverwatch.filterFailed",
-          "group": "navigation"
+          "group": "navigation@11"
         },
         {
           "command": "coverwatch.filterPending",
           "when": "view == coverwatch.tests && coverwatch.filterPending",
-          "group": "navigation"
+          "group": "navigation@12"
         },
         {
           "command": "coverwatch.filterPendingOff",
           "when": "view == coverwatch.tests && !coverwatch.filterPending",
-          "group": "navigation"
+          "group": "navigation@12"
         },
         {
           "command": "coverwatch.openSettings",
           "when": "view == coverwatch.tests",
-          "group": "navigation"
+          "group": "navigation@13"
         }
       ],
       "view/item/context": [

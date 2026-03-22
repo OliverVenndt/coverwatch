@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { CoverageStore } from './coverageMap';
 import { TestDiscovery } from './testDiscovery';
-import { TestStatus, CrunchConfig, LineState } from './types';
+import { TestStatus, CoverwatchConfig, LineState } from './types';
 import { logVerbose } from './logger';
 
 /**
@@ -23,7 +23,7 @@ export class DecorationEngine implements vscode.Disposable {
   constructor(
     private coverageStore: CoverageStore,
     private testDiscovery: TestDiscovery,
-    private config: CrunchConfig,
+    private config: CoverwatchConfig,
   ) {
     this.enabled = config.showGutterMarkers;
 
@@ -227,7 +227,7 @@ export class DecorationEngine implements vscode.Disposable {
     }
   }
 
-  updateConfig(config: CrunchConfig): void {
+  updateConfig(config: CoverwatchConfig): void {
     this.config = config;
     this.enabled = config.showGutterMarkers;
     this.refreshAllEditors();

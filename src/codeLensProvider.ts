@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { TestDiscovery } from './testDiscovery';
-import { TestStatus, CrunchConfig } from './types';
+import { TestStatus, CoverwatchConfig } from './types';
 
 /**
  * Provides CodeLens entries above test methods showing:
@@ -16,7 +16,7 @@ export class TestCodeLensProvider implements vscode.CodeLensProvider {
 
   constructor(
     private testDiscovery: TestDiscovery,
-    private config: CrunchConfig,
+    private config: CoverwatchConfig,
   ) {
     this.enabled = config.showCodeLens;
   }
@@ -128,7 +128,7 @@ export class TestCodeLensProvider implements vscode.CodeLensProvider {
     return undefined;
   }
 
-  updateConfig(config: CrunchConfig): void {
+  updateConfig(config: CoverwatchConfig): void {
     this.config = config;
     this.enabled = config.showCodeLens;
     this.refresh();

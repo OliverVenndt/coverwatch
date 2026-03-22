@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.0] - 2026-03-22
+
+### Fixed
+
+- **Status bar** — now shows "Coverwatch" instead of "Crunch" in the bottom bar
+- **Internal naming** — renamed all remaining `CrunchConfig`/`CrunchEngine` references to `CoverwatchConfig`/`CoverwatchEngine`
+- **Filter icon stability** — filter toggle buttons now stay in fixed positions when toggled on/off using explicit group ordering
+- **Filter icon clarity** — active filters show distinct icons (check/x/ellipsis), inactive filters show a uniform dash icon
+
 ## [1.4.0] - 2026-03-22
 
 ### Added
