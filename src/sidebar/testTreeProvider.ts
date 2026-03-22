@@ -71,6 +71,16 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     return count;
   }
 
+  getVisibleTestCount(): number {
+    let count = 0;
+    for (const project of this.testDiscovery.testProjects.values()) {
+      for (const test of project.tests.values()) {
+        if (this.matchesFilter(test)) { count++; }
+      }
+    }
+    return count;
+  }
+
   getTreeItem(element: TreeNode): vscode.TreeItem {
     if (element instanceof ProjectNode) {
       const item = new vscode.TreeItem(element.name, vscode.TreeItemCollapsibleState.Expanded);

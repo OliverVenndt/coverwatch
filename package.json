@@ -2,7 +2,7 @@
   "name": "coverwatch",
   "displayName": "Coverwatch \u2014 .NET Continuous Testing",
   "description": "Continuous testing engine for C#/.NET — inspired by NCrunch. Automatic test execution, per-line coverage gutter markers, impact analysis, and a real-time test sidebar.",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "publisher": "oliver-venndt",
   "author": {
     "name": "Oliver Venndt"
@@ -211,22 +211,22 @@
         {
           "command": "coverwatch.start",
           "when": "view == coverwatch.tests && !coverwatch.running",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
           "command": "coverwatch.stop",
           "when": "view == coverwatch.tests && coverwatch.running",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
           "command": "coverwatch.runAll",
           "when": "view == coverwatch.tests && coverwatch.running",
-          "group": "navigation"
+          "group": "navigation@2"
         },
         {
           "command": "coverwatch.resetCoverage",
           "when": "view == coverwatch.tests",
-          "group": "navigation"
+          "group": "navigation@3"
         },
         {
           "command": "coverwatch.filterPassed",

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1] - 2026-03-22
+
+### Fixed
+
+- **Empty tree message** — "All tests are hidden by filters" now correctly shows when filters result in no visible tests (not just when all toggles are off)
+- **Icon positions** — all toolbar buttons now have explicit ordering so they never shift when toggled or when engine state changes
+
 ## [1.5.0] - 2026-03-22
 
 ### Fixed

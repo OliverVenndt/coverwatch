@@ -405,10 +405,10 @@ class CoverwatchEngine implements vscode.Disposable {
     vscode.commands.executeCommand('setContext', 'coverwatch.filterPassed', state.showPassed);
     vscode.commands.executeCommand('setContext', 'coverwatch.filterFailed', state.showFailed);
     vscode.commands.executeCommand('setContext', 'coverwatch.filterPending', state.showPending);
-    // Set allFiltered when tests exist but all are hidden
+    // Set allFiltered when tests exist but none are visible after filtering
     const totalTests = this.testTreeProvider.getTotalTestCount();
-    const allOff = !state.showPassed && !state.showFailed && !state.showPending;
-    vscode.commands.executeCommand('setContext', 'coverwatch.allFiltered', totalTests > 0 && allOff);
+    const visibleTests = this.testTreeProvider.getVisibleTestCount();
+    vscode.commands.executeCommand('setContext', 'coverwatch.allFiltered', totalTests > 0 && visibleTests === 0);
   }
 
   /**
