@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0] - 2026-03-22
+
+### Added
+
+- **Empty filter state** — when all filters are toggled off, the tree view shows a helpful message with a "Show All Tests" button instead of appearing empty
+- **Show All Tests command** — resets all filter toggles to visible in one click
+- **Visible/total counts** — project descriptions now show "X/Y shown" when filters hide some tests (e.g. "3 passed, 5/8 shown")
+
 ## [1.3.0] - 2026-03-22
 
 ### Changed

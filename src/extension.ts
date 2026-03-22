@@ -66,6 +66,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('coverwatch.filterFailedOff', () => engine?.toggleFilter('failed')),
     vscode.commands.registerCommand('coverwatch.filterPending', () => engine?.toggleFilter('pending')),
     vscode.commands.registerCommand('coverwatch.filterPendingOff', () => engine?.toggleFilter('pending')),
+    vscode.commands.registerCommand('coverwatch.showAllTests', () => engine?.showAllFilters()),
     vscode.commands.registerCommand('coverwatch.pinTest', (arg: unknown) => {
       const testId = extractTestId(arg);
       if (testId) { engine?.togglePinTest(testId); }
@@ -391,10 +392,23 @@ class CrunchEngine implements vscode.Disposable {
    */
   toggleFilter(filter: 'passed' | 'failed' | 'pending'): void {
     this.testTreeProvider.setFilter(filter);
+    this.updateFilterContext();
+  }
+
+  showAllFilters(): void {
+    this.testTreeProvider.showAll();
+    this.updateFilterContext();
+  }
+
+  private updateFilterContext(): void {
     const state = this.testTreeProvider.getFilterState();
     vscode.commands.executeCommand('setContext', 'coverwatch.filterPassed', state.showPassed);
     vscode.commands.executeCommand('setContext', 'coverwatch.filterFailed', state.showFailed);
     vscode.commands.executeCommand('setContext', 'coverwatch.filterPending', state.showPending);
+    // Set allFiltered when tests exist but all are hidden
+    const totalTests = this.testTreeProvider.getTotalTestCount();
+    const allOff = !state.showPassed && !state.showFailed && !state.showPending;
+    vscode.commands.executeCommand('setContext', 'coverwatch.allFiltered', totalTests > 0 && allOff);
   }
 
   /**

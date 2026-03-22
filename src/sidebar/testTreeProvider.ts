@@ -56,6 +56,21 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     return { showPassed: this.showPassed, showFailed: this.showFailed, showPending: this.showPending };
   }
 
+  showAll(): void {
+    this.showPassed = true;
+    this.showFailed = true;
+    this.showPending = true;
+    this.refresh();
+  }
+
+  getTotalTestCount(): number {
+    let count = 0;
+    for (const project of this.testDiscovery.testProjects.values()) {
+      count += project.tests.size;
+    }
+    return count;
+  }
+
   getTreeItem(element: TreeNode): vscode.TreeItem {
     if (element instanceof ProjectNode) {
       const item = new vscode.TreeItem(element.name, vscode.TreeItemCollapsibleState.Expanded);
@@ -180,19 +195,27 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
   }
 
   private getProjectDescription(node: ProjectNode): string {
-    let passed = 0, failed = 0, total = 0;
+    let passed = 0, failed = 0, visible = 0;
     for (const cls of node.children) {
       for (const test of cls.children) {
-        total++;
+        visible++;
         if (test.testInfo.status === TestStatus.Passed) { passed++; }
         if (test.testInfo.status === TestStatus.Failed) { failed++; }
       }
     }
-    if (total === 0) { return 'no tests'; }
+    // Get unfiltered total for this project
+    const project = this.testDiscovery.testProjects.get(node.projectPath);
+    const totalInProject = project ? project.tests.size : visible;
+
+    if (totalInProject === 0) { return 'no tests'; }
     const parts: string[] = [];
     if (passed > 0) { parts.push(`${passed} passed`); }
     if (failed > 0) { parts.push(`${failed} failed`); }
-    parts.push(`${total} total`);
+    if (visible < totalInProject) {
+      parts.push(`${visible}/${totalInProject} shown`);
+    } else {
+      parts.push(`${totalInProject} total`);
+    }
     return parts.join(', ');
   }
 

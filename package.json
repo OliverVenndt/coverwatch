@@ -2,7 +2,7 @@
   "name": "coverwatch",
   "displayName": "Coverwatch \u2014 .NET Continuous Testing",
   "description": "Continuous testing engine for C#/.NET — inspired by NCrunch. Automatic test execution, per-line coverage gutter markers, impact analysis, and a real-time test sidebar.",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "publisher": "oliver-venndt",
   "author": {
     "name": "Oliver Venndt"
@@ -154,6 +154,12 @@
         "title": "Unpin Class",
         "category": "Coverwatch",
         "icon": "$(pin)"
+      },
+      {
+        "command": "coverwatch.showAllTests",
+        "title": "Show All Tests",
+        "category": "Coverwatch",
+        "icon": "$(filter)"
       }
     ],
     "viewsContainers": {
@@ -191,7 +197,13 @@
     "viewsWelcome": [
       {
         "view": "coverwatch.tests",
-        "contents": "No .NET test projects found.\n[Start Engine](command:coverwatch.start)\nMake sure your workspace contains .csproj files with test frameworks (xUnit, NUnit, MSTest)."
+        "contents": "No .NET test projects found.\n[Start Engine](command:coverwatch.start)\nMake sure your workspace contains .csproj files with test frameworks (xUnit, NUnit, MSTest).",
+        "when": "!coverwatch.allFiltered"
+      },
+      {
+        "view": "coverwatch.tests",
+        "contents": "All tests are hidden by filters.\n[Show All Tests](command:coverwatch.showAllTests)\nUse the filter buttons in the toolbar to toggle which tests are visible.",
+        "when": "coverwatch.allFiltered"
       }
     ],
     "menus": {
