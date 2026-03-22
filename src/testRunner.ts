@@ -146,7 +146,7 @@ export class TestRunner {
     }
 
     // Create temp directory for results
-    const tmpDir = path.join(os.tmpdir(), 'dotnet-crunch', item.id);
+    const tmpDir = path.join(os.tmpdir(), 'coverwatch', item.id);
     fs.mkdirSync(tmpDir, { recursive: true });
 
     const trxPath = path.join(tmpDir, 'results.trx');

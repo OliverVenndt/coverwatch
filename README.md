@@ -1,10 +1,10 @@
-# DotNet Crunch
+# Coverwatch
 
 **Continuous testing engine for C#/.NET** — inspired by NCrunch.
 
-DotNet Crunch runs your tests automatically as you code, shows per-line coverage in the gutter, and uses **impact analysis** to only re-run the tests that matter. No buttons to press, no context switching — just instant feedback.
+Coverwatch runs your tests automatically as you code, shows per-line coverage in the gutter, and uses **impact analysis** to only re-run the tests that matter. No buttons to press, no context switching — just instant feedback.
 
-![DotNet Crunch](media/icon.png)
+![Coverwatch](media/icon.png)
 
 ---
 
@@ -22,7 +22,7 @@ Hover over any dot to see exactly which tests cover that line, their pass/fail s
 
 ### ⚡ Impact Analysis — Only Run What Matters
 
-When you save a file, DotNet Crunch doesn't re-run your entire test suite. It uses a **coverage map** to determine exactly which tests are affected by your change and runs only those. This means:
+When you save a file, Coverwatch doesn't re-run your entire test suite. It uses a **coverage map** to determine exactly which tests are affected by your change and runs only those. This means:
 
 - Change a utility method → only the 3 tests that call it re-run
 - Change a test → only that test re-runs
@@ -71,7 +71,7 @@ File Watcher → Impact Analyzer → Test Runner → Results
 
 ### The Impact Analysis Loop
 
-1. **Cold start**: DotNet Crunch runs your entire test suite with [Coverlet](https://github.com/coverlet-coverage/coverlet) collecting per-line coverage data
+1. **Cold start**: Coverwatch runs your entire test suite with [Coverlet](https://github.com/coverlet-coverage/coverlet) collecting per-line coverage data
 2. **Coverage map built**: For every source file and line, the engine knows which test(s) touch it
 3. **You edit code**: The file watcher detects the change and diffs the old vs new content
 4. **Impact analysis**: Changed lines are looked up in the coverage map → affected test IDs returned
@@ -85,13 +85,13 @@ File Watcher → Impact Analyzer → Test Runner → Results
 - ✅ NUnit
 - ✅ MSTest
 
-DotNet Crunch auto-detects your test framework from `.csproj` references.
+Coverwatch auto-detects your test framework from `.csproj` references.
 
 ---
 
 ## Requirements
 
-- **.NET SDK 6.0+** installed and available on PATH (or configured via `dotnetCrunch.dotnetPath`)
+- **.NET SDK 6.0+** installed and available on PATH (or configured via `coverwatch.dotnetPath`)
 - **Coverlet** — Your test projects need the `coverlet.collector` NuGet package for coverage collection:
 
 ```bash
@@ -106,7 +106,7 @@ Most .NET test project templates include this by default. If you're not sure, ch
 
 1. Install the extension
 2. Open a workspace containing .NET test projects
-3. The engine starts automatically (or press `Ctrl+Shift+P` → "DotNet Crunch: Start Engine")
+3. The engine starts automatically (or press `Ctrl+Shift+P` → "Coverwatch: Start Engine")
 4. Wait for the initial test run to complete
 5. Start coding — you'll see gutter markers appear and tests re-run on save
 
@@ -116,17 +116,17 @@ Most .NET test project templates include this by default. If you're not sure, ch
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `dotnetCrunch.autoStart` | `true` | Automatically start when a test project is detected |
-| `dotnetCrunch.runOnSave` | `true` | Run affected tests on file save |
-| `dotnetCrunch.runOnChange` | `false` | Run affected tests on every keystroke (with debounce) |
-| `dotnetCrunch.debounceMs` | `500` | Debounce delay for `runOnChange` mode |
-| `dotnetCrunch.maxParallelRuns` | `2` | Max concurrent `dotnet test` processes |
-| `dotnetCrunch.coverageThreshold` | `80` | Coverage percentage target |
-| `dotnetCrunch.excludePatterns` | `["**/obj/**", "**/bin/**", "**/Migrations/**"]` | File patterns to ignore |
-| `dotnetCrunch.dotnetPath` | `"dotnet"` | Path to the `dotnet` CLI |
-| `dotnetCrunch.showGutterMarkers` | `true` | Show coverage dots in the gutter |
-| `dotnetCrunch.showCodeLens` | `true` | Show test status above test methods |
-| `dotnetCrunch.verboseOutput` | `false` | Enable detailed logging |
+| `coverwatch.autoStart` | `true` | Automatically start when a test project is detected |
+| `coverwatch.runOnSave` | `true` | Run affected tests on file save |
+| `coverwatch.runOnChange` | `false` | Run affected tests on every keystroke (with debounce) |
+| `coverwatch.debounceMs` | `500` | Debounce delay for `runOnChange` mode |
+| `coverwatch.maxParallelRuns` | `2` | Max concurrent `dotnet test` processes |
+| `coverwatch.coverageThreshold` | `80` | Coverage percentage target |
+| `coverwatch.excludePatterns` | `["**/obj/**", "**/bin/**", "**/Migrations/**"]` | File patterns to ignore |
+| `coverwatch.dotnetPath` | `"dotnet"` | Path to the `dotnet` CLI |
+| `coverwatch.showGutterMarkers` | `true` | Show coverage dots in the gutter |
+| `coverwatch.showCodeLens` | `true` | Show test status above test methods |
+| `coverwatch.verboseOutput` | `false` | Enable detailed logging |
 
 ---
 
@@ -134,12 +134,12 @@ Most .NET test project templates include this by default. If you're not sure, ch
 
 | Command | Description |
 |---------|-------------|
-| `DotNet Crunch: Start Engine` | Start watching and running tests |
-| `DotNet Crunch: Stop Engine` | Stop the engine |
-| `DotNet Crunch: Run All Tests` | Re-run the entire test suite |
-| `DotNet Crunch: Reset Coverage Map` | Clear coverage data and re-run all tests |
-| `DotNet Crunch: Toggle Gutter Markers` | Show/hide the gutter dots |
-| `DotNet Crunch: Show Dashboard` | Open the output channel |
+| `Coverwatch: Start Engine` | Start watching and running tests |
+| `Coverwatch: Stop Engine` | Stop the engine |
+| `Coverwatch: Run All Tests` | Re-run the entire test suite |
+| `Coverwatch: Reset Coverage Map` | Clear coverage data and re-run all tests |
+| `Coverwatch: Toggle Gutter Markers` | Show/hide the gutter dots |
+| `Coverwatch: Show Dashboard` | Open the output channel |
 
 ---
 
@@ -148,7 +148,7 @@ Most .NET test project templates include this by default. If you're not sure, ch
 - **First run is slow** — it builds and runs everything with coverage. Subsequent runs are fast because they're targeted.
 - **Add `coverlet.collector`** to all test projects for coverage to work.
 - **Use `runOnChange`** if you want NCrunch-level responsiveness, but be aware it's heavier on CPU.
-- **Check the output channel** ("DotNet Crunch" in the Output panel) for detailed logs if something isn't working.
+- **Check the output channel** ("Coverwatch" in the Output panel) for detailed logs if something isn't working.
 
 ---
 

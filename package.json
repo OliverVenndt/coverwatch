@@ -1,16 +1,16 @@
 {
-  "name": "dotnet-crunch",
-  "displayName": "DotNet Crunch",
+  "name": "coverwatch",
+  "displayName": "Coverwatch \u2014 .NET Continuous Testing",
   "description": "Continuous testing engine for C#/.NET — inspired by NCrunch. Automatic test execution, per-line coverage gutter markers, impact analysis, and a real-time test sidebar.",
   "version": "1.3.0",
-  "publisher": "Oliver Venndt",
+  "publisher": "oliver-venndt",
   "author": {
     "name": "Oliver Venndt"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OliverVenndt/dotnet-crunch"
+    "url": "https://github.com/OliverVenndt/coverwatch"
   },
   "engines": {
     "vscode": "^1.85.0"
@@ -43,300 +43,300 @@
   "contributes": {
     "commands": [
       {
-        "command": "dotnetCrunch.start",
+        "command": "coverwatch.start",
         "title": "Start Engine",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(play)"
       },
       {
-        "command": "dotnetCrunch.stop",
+        "command": "coverwatch.stop",
         "title": "Stop Engine",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(debug-stop)"
       },
       {
-        "command": "dotnetCrunch.runAll",
+        "command": "coverwatch.runAll",
         "title": "Run All Tests",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(run-all)"
       },
       {
-        "command": "dotnetCrunch.resetCoverage",
+        "command": "coverwatch.resetCoverage",
         "title": "Reset Coverage Map",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(refresh)"
       },
       {
-        "command": "dotnetCrunch.toggleGutter",
+        "command": "coverwatch.toggleGutter",
         "title": "Toggle Gutter Markers",
-        "category": "DotNet Crunch"
+        "category": "Coverwatch"
       },
       {
-        "command": "dotnetCrunch.runTest",
+        "command": "coverwatch.runTest",
         "title": "Run This Test",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(play)"
       },
       {
-        "command": "dotnetCrunch.debugTest",
+        "command": "coverwatch.debugTest",
         "title": "Debug This Test",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(debug-alt)"
       },
       {
-        "command": "dotnetCrunch.showDashboard",
+        "command": "coverwatch.showDashboard",
         "title": "Show Dashboard",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(dashboard)"
       },
       {
-        "command": "dotnetCrunch.openSettings",
+        "command": "coverwatch.openSettings",
         "title": "Open Settings",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(gear)"
       },
       {
-        "command": "dotnetCrunch.filterPassed",
+        "command": "coverwatch.filterPassed",
         "title": "Hide Passed Tests",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(pass-filled)"
       },
       {
-        "command": "dotnetCrunch.filterPassedOff",
+        "command": "coverwatch.filterPassedOff",
         "title": "Show Passed Tests",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(pass)"
       },
       {
-        "command": "dotnetCrunch.filterFailed",
+        "command": "coverwatch.filterFailed",
         "title": "Hide Failed Tests",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(error)"
       },
       {
-        "command": "dotnetCrunch.filterFailedOff",
+        "command": "coverwatch.filterFailedOff",
         "title": "Show Failed Tests",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(circle-large-outline)"
       },
       {
-        "command": "dotnetCrunch.filterPending",
+        "command": "coverwatch.filterPending",
         "title": "Hide Pending Tests",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(clock)"
       },
       {
-        "command": "dotnetCrunch.filterPendingOff",
+        "command": "coverwatch.filterPendingOff",
         "title": "Show Pending Tests",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(circle-outline)"
       },
       {
-        "command": "dotnetCrunch.pinTest",
+        "command": "coverwatch.pinTest",
         "title": "Pin Test",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(pinned)"
       },
       {
-        "command": "dotnetCrunch.unpinTest",
+        "command": "coverwatch.unpinTest",
         "title": "Unpin Test",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(pin)"
       },
       {
-        "command": "dotnetCrunch.pinClass",
+        "command": "coverwatch.pinClass",
         "title": "Pin Class",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(pinned)"
       },
       {
-        "command": "dotnetCrunch.unpinClass",
+        "command": "coverwatch.unpinClass",
         "title": "Unpin Class",
-        "category": "DotNet Crunch",
+        "category": "Coverwatch",
         "icon": "$(pin)"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "dotnetCrunch",
-          "title": "DotNet Crunch",
+          "id": "coverwatch",
+          "title": "Coverwatch",
           "icon": "media/sidebar-icon.svg"
         }
       ]
     },
     "views": {
-      "dotnetCrunch": [
+      "coverwatch": [
         {
-          "id": "dotnetCrunch.tests",
+          "id": "coverwatch.tests",
           "name": "Tests",
           "icon": "$(beaker)",
-          "contextualTitle": "DotNet Crunch Tests"
+          "contextualTitle": "Coverwatch Tests"
         },
         {
-          "id": "dotnetCrunch.queue",
+          "id": "coverwatch.queue",
           "name": "Processing Queue",
           "icon": "$(list-ordered)",
-          "contextualTitle": "DotNet Crunch Queue",
+          "contextualTitle": "Coverwatch Queue",
           "visibility": "collapsed"
         },
         {
-          "id": "dotnetCrunch.metrics",
+          "id": "coverwatch.metrics",
           "name": "Metrics",
           "type": "webview",
-          "contextualTitle": "DotNet Crunch Metrics"
+          "contextualTitle": "Coverwatch Metrics"
         }
       ]
     },
     "viewsWelcome": [
       {
-        "view": "dotnetCrunch.tests",
-        "contents": "No .NET test projects found.\n[Start Engine](command:dotnetCrunch.start)\nMake sure your workspace contains .csproj files with test frameworks (xUnit, NUnit, MSTest)."
+        "view": "coverwatch.tests",
+        "contents": "No .NET test projects found.\n[Start Engine](command:coverwatch.start)\nMake sure your workspace contains .csproj files with test frameworks (xUnit, NUnit, MSTest)."
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "dotnetCrunch.start",
-          "when": "view == dotnetCrunch.tests && !dotnetCrunch.running",
+          "command": "coverwatch.start",
+          "when": "view == coverwatch.tests && !coverwatch.running",
           "group": "navigation"
         },
         {
-          "command": "dotnetCrunch.stop",
-          "when": "view == dotnetCrunch.tests && dotnetCrunch.running",
+          "command": "coverwatch.stop",
+          "when": "view == coverwatch.tests && coverwatch.running",
           "group": "navigation"
         },
         {
-          "command": "dotnetCrunch.runAll",
-          "when": "view == dotnetCrunch.tests && dotnetCrunch.running",
+          "command": "coverwatch.runAll",
+          "when": "view == coverwatch.tests && coverwatch.running",
           "group": "navigation"
         },
         {
-          "command": "dotnetCrunch.resetCoverage",
-          "when": "view == dotnetCrunch.tests",
+          "command": "coverwatch.resetCoverage",
+          "when": "view == coverwatch.tests",
           "group": "navigation"
         },
         {
-          "command": "dotnetCrunch.filterPassed",
-          "when": "view == dotnetCrunch.tests && dotnetCrunch.filterPassed",
+          "command": "coverwatch.filterPassed",
+          "when": "view == coverwatch.tests && coverwatch.filterPassed",
           "group": "navigation"
         },
         {
-          "command": "dotnetCrunch.filterPassedOff",
-          "when": "view == dotnetCrunch.tests && !dotnetCrunch.filterPassed",
+          "command": "coverwatch.filterPassedOff",
+          "when": "view == coverwatch.tests && !coverwatch.filterPassed",
           "group": "navigation"
         },
         {
-          "command": "dotnetCrunch.filterFailed",
-          "when": "view == dotnetCrunch.tests && dotnetCrunch.filterFailed",
+          "command": "coverwatch.filterFailed",
+          "when": "view == coverwatch.tests && coverwatch.filterFailed",
           "group": "navigation"
         },
         {
-          "command": "dotnetCrunch.filterFailedOff",
-          "when": "view == dotnetCrunch.tests && !dotnetCrunch.filterFailed",
+          "command": "coverwatch.filterFailedOff",
+          "when": "view == coverwatch.tests && !coverwatch.filterFailed",
           "group": "navigation"
         },
         {
-          "command": "dotnetCrunch.filterPending",
-          "when": "view == dotnetCrunch.tests && dotnetCrunch.filterPending",
+          "command": "coverwatch.filterPending",
+          "when": "view == coverwatch.tests && coverwatch.filterPending",
           "group": "navigation"
         },
         {
-          "command": "dotnetCrunch.filterPendingOff",
-          "when": "view == dotnetCrunch.tests && !dotnetCrunch.filterPending",
+          "command": "coverwatch.filterPendingOff",
+          "when": "view == coverwatch.tests && !coverwatch.filterPending",
           "group": "navigation"
         },
         {
-          "command": "dotnetCrunch.openSettings",
-          "when": "view == dotnetCrunch.tests",
+          "command": "coverwatch.openSettings",
+          "when": "view == coverwatch.tests",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "dotnetCrunch.runTest",
-          "when": "view == dotnetCrunch.tests && viewItem =~ /^test/",
+          "command": "coverwatch.runTest",
+          "when": "view == coverwatch.tests && viewItem =~ /^test/",
           "group": "inline"
         },
         {
-          "command": "dotnetCrunch.debugTest",
-          "when": "view == dotnetCrunch.tests && viewItem =~ /^test/",
+          "command": "coverwatch.debugTest",
+          "when": "view == coverwatch.tests && viewItem =~ /^test/",
           "group": "inline"
         },
         {
-          "command": "dotnetCrunch.pinTest",
-          "when": "view == dotnetCrunch.tests && viewItem =~ /^test/ && viewItem =~ /^((?!pinned).)*$/",
+          "command": "coverwatch.pinTest",
+          "when": "view == coverwatch.tests && viewItem =~ /^test/ && viewItem =~ /^((?!pinned).)*$/",
           "group": "inline"
         },
         {
-          "command": "dotnetCrunch.unpinTest",
-          "when": "view == dotnetCrunch.tests && viewItem =~ /^test/ && viewItem =~ /pinned/",
+          "command": "coverwatch.unpinTest",
+          "when": "view == coverwatch.tests && viewItem =~ /^test/ && viewItem =~ /pinned/",
           "group": "inline"
         },
         {
-          "command": "dotnetCrunch.pinClass",
-          "when": "view == dotnetCrunch.tests && viewItem == testClass",
+          "command": "coverwatch.pinClass",
+          "when": "view == coverwatch.tests && viewItem == testClass",
           "group": "inline"
         },
         {
-          "command": "dotnetCrunch.unpinClass",
-          "when": "view == dotnetCrunch.tests && viewItem == testClass-pinned",
+          "command": "coverwatch.unpinClass",
+          "when": "view == coverwatch.tests && viewItem == testClass-pinned",
           "group": "inline"
         }
       ]
     },
     "configuration": {
-      "title": "DotNet Crunch",
+      "title": "Coverwatch",
       "properties": {
-        "dotnetCrunch.autoStart": {
+        "coverwatch.autoStart": {
           "type": "boolean",
           "default": true,
           "description": "Automatically start the engine when a .NET test project is detected."
         },
-        "dotnetCrunch.debounceMs": {
+        "coverwatch.debounceMs": {
           "type": "number",
           "default": 500,
           "minimum": 100,
           "maximum": 5000,
           "description": "Delay in milliseconds before triggering test run after file change."
         },
-        "dotnetCrunch.runOnSave": {
+        "coverwatch.runOnSave": {
           "type": "boolean",
           "default": true,
           "description": "Run affected tests automatically on file save."
         },
-        "dotnetCrunch.runOnChange": {
+        "coverwatch.runOnChange": {
           "type": "boolean",
           "default": false,
           "description": "Run affected tests on every keystroke (with debounce). More responsive but heavier."
         },
-        "dotnetCrunch.runMode": {
+        "coverwatch.runMode": {
           "type": "string",
           "enum": ["automatic", "manual"],
           "default": "automatic",
           "description": "Controls whether tests run automatically on file changes or only when triggered manually."
         },
-        "dotnetCrunch.testScope": {
+        "coverwatch.testScope": {
           "type": "string",
           "enum": ["all", "impactOnly"],
           "default": "impactOnly",
           "description": "Which tests to run: 'all' runs every test on any change, 'impactOnly' runs only tests affected by the change."
         },
-        "dotnetCrunch.maxParallelRuns": {
+        "coverwatch.maxParallelRuns": {
           "type": "number",
           "default": 2,
           "minimum": 1,
           "maximum": 8,
           "description": "Maximum number of parallel dotnet test processes."
         },
-        "dotnetCrunch.coverageThreshold": {
+        "coverwatch.coverageThreshold": {
           "type": "number",
           "default": 80,
           "minimum": 0,
           "maximum": 100,
           "description": "Coverage percentage threshold for the metrics panel."
         },
-        "dotnetCrunch.excludePatterns": {
+        "coverwatch.excludePatterns": {
           "type": "array",
           "default": [
             "**/obj/**",
@@ -348,22 +348,22 @@
           },
           "description": "Glob patterns for files to exclude from watching."
         },
-        "dotnetCrunch.dotnetPath": {
+        "coverwatch.dotnetPath": {
           "type": "string",
           "default": "dotnet",
           "description": "Path to the dotnet CLI executable."
         },
-        "dotnetCrunch.showGutterMarkers": {
+        "coverwatch.showGutterMarkers": {
           "type": "boolean",
           "default": true,
           "description": "Show coverage and test status markers in the editor gutter."
         },
-        "dotnetCrunch.showCodeLens": {
+        "coverwatch.showCodeLens": {
           "type": "boolean",
           "default": true,
           "description": "Show test status CodeLens above test methods."
         },
-        "dotnetCrunch.verboseOutput": {
+        "coverwatch.verboseOutput": {
           "type": "boolean",
           "default": false,
           "description": "Enable verbose logging in the output channel."

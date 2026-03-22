@@ -33,52 +33,52 @@ function extractClassName(arg: unknown): string | undefined {
 }
 
 export function activate(context: vscode.ExtensionContext): void {
-  const outputChannel = vscode.window.createOutputChannel('DotNet Crunch');
+  const outputChannel = vscode.window.createOutputChannel('Coverwatch');
   const config = loadConfig();
   initLogger(outputChannel, config.verboseOutput);
 
-  log('DotNet Crunch activating...');
+  log('Coverwatch activating...');
 
   engine = new CrunchEngine(context, config, outputChannel);
 
   // Register commands
   context.subscriptions.push(
-    vscode.commands.registerCommand('dotnetCrunch.start', () => engine?.start()),
-    vscode.commands.registerCommand('dotnetCrunch.stop', () => engine?.stop()),
-    vscode.commands.registerCommand('dotnetCrunch.runAll', () => engine?.runAll()),
-    vscode.commands.registerCommand('dotnetCrunch.resetCoverage', () => engine?.resetCoverage()),
-    vscode.commands.registerCommand('dotnetCrunch.toggleGutter', () => engine?.toggleGutter()),
-    vscode.commands.registerCommand('dotnetCrunch.runTest', (arg: unknown) => {
+    vscode.commands.registerCommand('coverwatch.start', () => engine?.start()),
+    vscode.commands.registerCommand('coverwatch.stop', () => engine?.stop()),
+    vscode.commands.registerCommand('coverwatch.runAll', () => engine?.runAll()),
+    vscode.commands.registerCommand('coverwatch.resetCoverage', () => engine?.resetCoverage()),
+    vscode.commands.registerCommand('coverwatch.toggleGutter', () => engine?.toggleGutter()),
+    vscode.commands.registerCommand('coverwatch.runTest', (arg: unknown) => {
       const testId = extractTestId(arg);
       if (testId) { engine?.runSingleTest(testId); }
     }),
-    vscode.commands.registerCommand('dotnetCrunch.debugTest', (arg: unknown) => {
+    vscode.commands.registerCommand('coverwatch.debugTest', (arg: unknown) => {
       const testId = extractTestId(arg);
       if (testId) { engine?.debugTest(testId); }
     }),
-    vscode.commands.registerCommand('dotnetCrunch.showDashboard', () => outputChannel.show()),
-    vscode.commands.registerCommand('dotnetCrunch.openSettings', () =>
-      vscode.commands.executeCommand('workbench.action.openSettings', 'dotnetCrunch')
+    vscode.commands.registerCommand('coverwatch.showDashboard', () => outputChannel.show()),
+    vscode.commands.registerCommand('coverwatch.openSettings', () =>
+      vscode.commands.executeCommand('workbench.action.openSettings', 'coverwatch')
     ),
-    vscode.commands.registerCommand('dotnetCrunch.filterPassed', () => engine?.toggleFilter('passed')),
-    vscode.commands.registerCommand('dotnetCrunch.filterPassedOff', () => engine?.toggleFilter('passed')),
-    vscode.commands.registerCommand('dotnetCrunch.filterFailed', () => engine?.toggleFilter('failed')),
-    vscode.commands.registerCommand('dotnetCrunch.filterFailedOff', () => engine?.toggleFilter('failed')),
-    vscode.commands.registerCommand('dotnetCrunch.filterPending', () => engine?.toggleFilter('pending')),
-    vscode.commands.registerCommand('dotnetCrunch.filterPendingOff', () => engine?.toggleFilter('pending')),
-    vscode.commands.registerCommand('dotnetCrunch.pinTest', (arg: unknown) => {
+    vscode.commands.registerCommand('coverwatch.filterPassed', () => engine?.toggleFilter('passed')),
+    vscode.commands.registerCommand('coverwatch.filterPassedOff', () => engine?.toggleFilter('passed')),
+    vscode.commands.registerCommand('coverwatch.filterFailed', () => engine?.toggleFilter('failed')),
+    vscode.commands.registerCommand('coverwatch.filterFailedOff', () => engine?.toggleFilter('failed')),
+    vscode.commands.registerCommand('coverwatch.filterPending', () => engine?.toggleFilter('pending')),
+    vscode.commands.registerCommand('coverwatch.filterPendingOff', () => engine?.toggleFilter('pending')),
+    vscode.commands.registerCommand('coverwatch.pinTest', (arg: unknown) => {
       const testId = extractTestId(arg);
       if (testId) { engine?.togglePinTest(testId); }
     }),
-    vscode.commands.registerCommand('dotnetCrunch.unpinTest', (arg: unknown) => {
+    vscode.commands.registerCommand('coverwatch.unpinTest', (arg: unknown) => {
       const testId = extractTestId(arg);
       if (testId) { engine?.togglePinTest(testId); }
     }),
-    vscode.commands.registerCommand('dotnetCrunch.pinClass', (arg: unknown) => {
+    vscode.commands.registerCommand('coverwatch.pinClass', (arg: unknown) => {
       const className = extractClassName(arg);
       if (className) { engine?.togglePinClass(className); }
     }),
-    vscode.commands.registerCommand('dotnetCrunch.unpinClass', (arg: unknown) => {
+    vscode.commands.registerCommand('coverwatch.unpinClass', (arg: unknown) => {
       const className = extractClassName(arg);
       if (className) { engine?.togglePinClass(className); }
     }),
@@ -87,7 +87,7 @@ export function activate(context: vscode.ExtensionContext): void {
   // Watch for config changes
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration('dotnetCrunch')) {
+      if (e.affectsConfiguration('coverwatch')) {
         engine?.updateConfig(loadConfig());
       }
     }),
@@ -98,7 +98,7 @@ export function activate(context: vscode.ExtensionContext): void {
     engine.start();
   }
 
-  log('DotNet Crunch activated');
+  log('Coverwatch activated');
 }
 
 export function deactivate(): void {
@@ -152,9 +152,9 @@ class CrunchEngine implements vscode.Disposable {
 
     // Register UI providers
     this.disposables.push(
-      vscode.window.registerTreeDataProvider('dotnetCrunch.tests', this.testTreeProvider),
-      vscode.window.registerTreeDataProvider('dotnetCrunch.queue', this.queueTreeProvider),
-      vscode.window.registerWebviewViewProvider('dotnetCrunch.metrics', this.metricsProvider),
+      vscode.window.registerTreeDataProvider('coverwatch.tests', this.testTreeProvider),
+      vscode.window.registerTreeDataProvider('coverwatch.queue', this.queueTreeProvider),
+      vscode.window.registerWebviewViewProvider('coverwatch.metrics', this.metricsProvider),
       vscode.languages.registerCodeLensProvider({ language: 'csharp' }, this.codeLensProvider),
     );
 
@@ -162,9 +162,9 @@ class CrunchEngine implements vscode.Disposable {
     this.wireEvents();
 
     // Set initial filter context for toggle icons
-    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterPassed', true);
-    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterFailed', true);
-    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterPending', true);
+    vscode.commands.executeCommand('setContext', 'coverwatch.filterPassed', true);
+    vscode.commands.executeCommand('setContext', 'coverwatch.filterFailed', true);
+    vscode.commands.executeCommand('setContext', 'coverwatch.filterPending', true);
 
     // Track all for disposal
     this.disposables.push(
@@ -266,7 +266,7 @@ class CrunchEngine implements vscode.Disposable {
       // Discover test projects
       const projects = await this.testDiscovery.discoverProjects();
       if (projects.length === 0) {
-        vscode.window.showWarningMessage('DotNet Crunch: No .NET test projects found in the workspace.');
+        vscode.window.showWarningMessage('Coverwatch: No .NET test projects found in the workspace.');
         this.setState(EngineState.Stopped);
         return;
       }
@@ -289,7 +289,7 @@ class CrunchEngine implements vscode.Disposable {
       this.fileWatcher.start();
 
       // Set running context for menu visibility
-      vscode.commands.executeCommand('setContext', 'dotnetCrunch.running', true);
+      vscode.commands.executeCommand('setContext', 'coverwatch.running', true);
 
       this.setState(EngineState.Running);
       log('Engine started');
@@ -298,7 +298,7 @@ class CrunchEngine implements vscode.Disposable {
       vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
-          title: 'DotNet Crunch: Running initial test suite with coverage...',
+          title: 'Coverwatch: Running initial test suite with coverage...',
           cancellable: false,
         },
         async () => {
@@ -307,7 +307,7 @@ class CrunchEngine implements vscode.Disposable {
       );
     } catch (err) {
       logError('Engine failed to start', err);
-      vscode.window.showErrorMessage(`DotNet Crunch failed to start: ${err}`);
+      vscode.window.showErrorMessage(`Coverwatch failed to start: ${err}`);
       this.setState(EngineState.Stopped);
     }
   }
@@ -318,7 +318,7 @@ class CrunchEngine implements vscode.Disposable {
   stop(): void {
     this.fileWatcher.stop();
     this.testRunner.clearQueue();
-    vscode.commands.executeCommand('setContext', 'dotnetCrunch.running', false);
+    vscode.commands.executeCommand('setContext', 'coverwatch.running', false);
     this.setState(EngineState.Stopped);
     log('Engine stopped');
   }
@@ -392,9 +392,9 @@ class CrunchEngine implements vscode.Disposable {
   toggleFilter(filter: 'passed' | 'failed' | 'pending'): void {
     this.testTreeProvider.setFilter(filter);
     const state = this.testTreeProvider.getFilterState();
-    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterPassed', state.showPassed);
-    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterFailed', state.showFailed);
-    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterPending', state.showPending);
+    vscode.commands.executeCommand('setContext', 'coverwatch.filterPassed', state.showPassed);
+    vscode.commands.executeCommand('setContext', 'coverwatch.filterFailed', state.showFailed);
+    vscode.commands.executeCommand('setContext', 'coverwatch.filterPending', state.showPending);
   }
 
   /**
@@ -422,11 +422,11 @@ class CrunchEngine implements vscode.Disposable {
   private savePinnedTests(): void {
     const pinnedIds = this.testDiscovery.getAllTests()
       .filter(t => t.isPinned).map(t => t.testId);
-    this.context.globalState.update('dotnetCrunch.pinnedTests', pinnedIds);
+    this.context.globalState.update('coverwatch.pinnedTests', pinnedIds);
   }
 
   private restorePinnedTests(): void {
-    const pinnedIds = this.context.globalState.get<string[]>('dotnetCrunch.pinnedTests', []);
+    const pinnedIds = this.context.globalState.get<string[]>('coverwatch.pinnedTests', []);
     const pinnedSet = new Set(pinnedIds);
     for (const test of this.testDiscovery.getAllTests()) {
       if (pinnedSet.has(test.testId)) { test.isPinned = true; }

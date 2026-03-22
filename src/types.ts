@@ -125,7 +125,7 @@ export interface CrunchConfig {
 }
 
 export function loadConfig(): CrunchConfig {
-  const cfg = vscode.workspace.getConfiguration('dotnetCrunch');
+  const cfg = vscode.workspace.getConfiguration('coverwatch');
   return {
     autoStart: cfg.get<boolean>('autoStart', true),
     debounceMs: cfg.get<number>('debounceMs', 500),

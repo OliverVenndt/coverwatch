@@ -15,8 +15,8 @@ export class StatusBar implements vscode.Disposable {
       vscode.StatusBarAlignment.Left,
       100,
     );
-    this.statusBarItem.command = 'dotnetCrunch.showDashboard';
-    this.statusBarItem.name = 'DotNet Crunch';
+    this.statusBarItem.command = 'coverwatch.showDashboard';
+    this.statusBarItem.name = 'Coverwatch';
     this.statusBarItem.show();
     this.update(EngineState.Stopped);
   }
@@ -71,7 +71,7 @@ export class StatusBar implements vscode.Disposable {
     }
 
     this.statusBarItem.tooltip = new vscode.MarkdownString(
-      `**DotNet Crunch**\n\n` +
+      `**Coverwatch**\n\n` +
       `Engine: ${state}\n\n` +
       `Tests: ${passed} passed, ${failed} failed, ${total} total`
     );

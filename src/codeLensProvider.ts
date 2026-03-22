@@ -77,14 +77,14 @@ export class TestCodeLensProvider implements vscode.CodeLensProvider {
             // Run lens
             lenses.push(new vscode.CodeLens(range, {
               title: '$(play) Run',
-              command: 'dotnetCrunch.runTest',
+              command: 'coverwatch.runTest',
               arguments: [testInfo?.testId ?? methodName],
             }));
 
             // Debug lens
             lenses.push(new vscode.CodeLens(range, {
               title: '$(debug-alt) Debug',
-              command: 'dotnetCrunch.debugTest',
+              command: 'coverwatch.debugTest',
               arguments: [testInfo?.testId ?? methodName],
             }));
 

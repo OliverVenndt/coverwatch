@@ -167,7 +167,7 @@ export class DecorationEngine implements vscode.Disposable {
     const md = new vscode.MarkdownString();
     md.isTrusted = true;
 
-    md.appendMarkdown(`**DotNet Crunch** — ${testIds.length} test(s) cover this line\n\n`);
+    md.appendMarkdown(`**Coverwatch** — ${testIds.length} test(s) cover this line\n\n`);
 
     for (const testId of testIds.slice(0, 10)) { // Limit to 10
       const test = this.findTest(testId);
