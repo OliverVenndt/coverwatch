@@ -61,8 +61,11 @@ export function activate(context: vscode.ExtensionContext): void {
       vscode.commands.executeCommand('workbench.action.openSettings', 'dotnetCrunch')
     ),
     vscode.commands.registerCommand('dotnetCrunch.filterPassed', () => engine?.toggleFilter('passed')),
+    vscode.commands.registerCommand('dotnetCrunch.filterPassedOff', () => engine?.toggleFilter('passed')),
     vscode.commands.registerCommand('dotnetCrunch.filterFailed', () => engine?.toggleFilter('failed')),
-    vscode.commands.registerCommand('dotnetCrunch.filterOther', () => engine?.toggleFilter('other')),
+    vscode.commands.registerCommand('dotnetCrunch.filterFailedOff', () => engine?.toggleFilter('failed')),
+    vscode.commands.registerCommand('dotnetCrunch.filterPending', () => engine?.toggleFilter('pending')),
+    vscode.commands.registerCommand('dotnetCrunch.filterPendingOff', () => engine?.toggleFilter('pending')),
     vscode.commands.registerCommand('dotnetCrunch.pinTest', (arg: unknown) => {
       const testId = extractTestId(arg);
       if (testId) { engine?.togglePinTest(testId); }
@@ -157,6 +160,11 @@ class CrunchEngine implements vscode.Disposable {
 
     // Wire up events
     this.wireEvents();
+
+    // Set initial filter context for toggle icons
+    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterPassed', true);
+    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterFailed', true);
+    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterPending', true);
 
     // Track all for disposal
     this.disposables.push(
@@ -381,8 +389,12 @@ class CrunchEngine implements vscode.Disposable {
   /**
    * Toggle a tree view filter.
    */
-  toggleFilter(filter: 'passed' | 'failed' | 'other'): void {
+  toggleFilter(filter: 'passed' | 'failed' | 'pending'): void {
     this.testTreeProvider.setFilter(filter);
+    const state = this.testTreeProvider.getFilterState();
+    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterPassed', state.showPassed);
+    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterFailed', state.showFailed);
+    vscode.commands.executeCommand('setContext', 'dotnetCrunch.filterPending', state.showPending);
   }
 
   /**

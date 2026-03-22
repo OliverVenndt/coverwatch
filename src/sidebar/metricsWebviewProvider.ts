@@ -216,15 +216,7 @@ export class MetricsWebviewProvider implements vscode.WebviewViewProvider {
       <span class="info-value">${metrics.totalCoveredLines.toLocaleString()} / ${metrics.totalInstrumentedLines.toLocaleString()} (${coveragePct}%)</span>
     </div>
     <div class="bar">
-      <div class="bar-fill" style="width: ${coveragePct}%; background: ${coveragePct >= this.config.coverageThreshold ? '#22c55e' : '#ef4444'};"></div>
-    </div>
-    <div class="coverage-row">
-      <span class="threshold-label">Threshold: ${this.config.coverageThreshold}%</span>
-      <span class="threshold-label">${coveragePct}%</span>
-    </div>
-    <div class="info-row" style="margin-top: 8px;">
-      <span>Tests with coverage</span>
-      <span class="info-value">${metrics.totalTests}</span>
+      <div class="bar-fill" style="width: ${coveragePct}%; background: var(--vscode-progressBar-background, #0078d4);"></div>
     </div>
   </div>
 </body>

@@ -37,7 +37,7 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
   // Filter state — all visible by default
   private showPassed = true;
   private showFailed = true;
-  private showOther = true; // stale, unknown, skipped, queued, running
+  private showPending = true; // stale, unknown, skipped, queued, running (not yet run)
 
   constructor(private testDiscovery: TestDiscovery) {}
 
@@ -45,15 +45,15 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     this._onDidChangeTreeData.fire(undefined);
   }
 
-  setFilter(filter: 'passed' | 'failed' | 'other'): void {
+  setFilter(filter: 'passed' | 'failed' | 'pending'): void {
     if (filter === 'passed') { this.showPassed = !this.showPassed; }
     else if (filter === 'failed') { this.showFailed = !this.showFailed; }
-    else { this.showOther = !this.showOther; }
+    else { this.showPending = !this.showPending; }
     this.refresh();
   }
 
-  getFilterState(): { showPassed: boolean; showFailed: boolean; showOther: boolean } {
-    return { showPassed: this.showPassed, showFailed: this.showFailed, showOther: this.showOther };
+  getFilterState(): { showPassed: boolean; showFailed: boolean; showPending: boolean } {
+    return { showPassed: this.showPassed, showFailed: this.showFailed, showPending: this.showPending };
   }
 
   getTreeItem(element: TreeNode): vscode.TreeItem {
@@ -153,11 +153,11 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
   }
 
   private matchesFilter(test: TestInfo): boolean {
-    if (test.isStale) { return this.showOther; }
+    if (test.isStale) { return this.showPending; }
     switch (test.status) {
       case TestStatus.Passed: return this.showPassed;
       case TestStatus.Failed: return this.showFailed;
-      default: return this.showOther;
+      default: return this.showPending;
     }
   }
 

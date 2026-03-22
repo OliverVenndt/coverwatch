@@ -97,19 +97,37 @@
       },
       {
         "command": "dotnetCrunch.filterPassed",
-        "title": "Toggle Passed Tests",
+        "title": "Hide Passed Tests",
         "category": "DotNet Crunch",
         "icon": "$(pass-filled)"
       },
       {
+        "command": "dotnetCrunch.filterPassedOff",
+        "title": "Show Passed Tests",
+        "category": "DotNet Crunch",
+        "icon": "$(pass)"
+      },
+      {
         "command": "dotnetCrunch.filterFailed",
-        "title": "Toggle Failed Tests",
+        "title": "Hide Failed Tests",
         "category": "DotNet Crunch",
         "icon": "$(error)"
       },
       {
-        "command": "dotnetCrunch.filterOther",
-        "title": "Toggle Other Tests",
+        "command": "dotnetCrunch.filterFailedOff",
+        "title": "Show Failed Tests",
+        "category": "DotNet Crunch",
+        "icon": "$(circle-large-outline)"
+      },
+      {
+        "command": "dotnetCrunch.filterPending",
+        "title": "Hide Pending Tests",
+        "category": "DotNet Crunch",
+        "icon": "$(clock)"
+      },
+      {
+        "command": "dotnetCrunch.filterPendingOff",
+        "title": "Show Pending Tests",
         "category": "DotNet Crunch",
         "icon": "$(circle-outline)"
       },
@@ -200,17 +218,32 @@
         },
         {
           "command": "dotnetCrunch.filterPassed",
-          "when": "view == dotnetCrunch.tests",
+          "when": "view == dotnetCrunch.tests && dotnetCrunch.filterPassed",
+          "group": "navigation"
+        },
+        {
+          "command": "dotnetCrunch.filterPassedOff",
+          "when": "view == dotnetCrunch.tests && !dotnetCrunch.filterPassed",
           "group": "navigation"
         },
         {
           "command": "dotnetCrunch.filterFailed",
-          "when": "view == dotnetCrunch.tests",
+          "when": "view == dotnetCrunch.tests && dotnetCrunch.filterFailed",
           "group": "navigation"
         },
         {
-          "command": "dotnetCrunch.filterOther",
-          "when": "view == dotnetCrunch.tests",
+          "command": "dotnetCrunch.filterFailedOff",
+          "when": "view == dotnetCrunch.tests && !dotnetCrunch.filterFailed",
+          "group": "navigation"
+        },
+        {
+          "command": "dotnetCrunch.filterPending",
+          "when": "view == dotnetCrunch.tests && dotnetCrunch.filterPending",
+          "group": "navigation"
+        },
+        {
+          "command": "dotnetCrunch.filterPendingOff",
+          "when": "view == dotnetCrunch.tests && !dotnetCrunch.filterPending",
           "group": "navigation"
         },
         {
