@@ -101,6 +101,7 @@ export class DecorationEngine implements vscode.Disposable {
     const fileCoverage = this.coverageStore.getFileCoverage(filePath);
 
     if (!fileCoverage) {
+      logVerbose(`No coverage data for ${path.basename(filePath)}`);
       this.clearDecorations(editor);
       return;
     }

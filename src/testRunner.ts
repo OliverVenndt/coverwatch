@@ -178,7 +178,7 @@ export class TestRunner {
       'test',
       item.projectPath,
       '--logger', `trx;LogFileName=${trxPath}`,
-      '--collect:XPlat Code Coverage',
+      '--collect', 'XPlat Code Coverage',
       '--results-directory', coverageDir,
       '-v', 'q',
     ];
@@ -224,12 +224,14 @@ export class TestRunner {
 
         // Parse coverage
         const coberturaFiles = this.findFiles(coverageDir, 'coverage.cobertura.xml');
+        log(`Coverage files found: ${coberturaFiles.length} in ${coverageDir}`);
         if (coberturaFiles.length > 0) {
           const fileCoverage = this.coverageStore.parseCoberturaXml(coberturaFiles[0]);
+          log(`Coverage parsed: ${fileCoverage.length} files, ${fileCoverage.reduce((sum, fc) => sum + fc.lines.length, 0)} lines`);
           this.coverageStore.ingestCoverageForTests(item.testIds, fileCoverage);
           this._onCoverage.fire(fileCoverage);
         } else {
-          logVerbose('No Cobertura coverage file found');
+          log('No Cobertura coverage file found — make sure coverlet.collector is installed in your test project');
         }
 
         // Cleanup temp
