@@ -63,7 +63,7 @@ export class TestDiscovery {
     log(`Discovering tests in ${project.name}...`);
 
     return new Promise((resolve) => {
-      const args = ['test', projectPath, '--list-tests', '--no-build', '-v', 'q'];
+      const args = ['test', projectPath, '--list-tests', '-v', 'q'];
       const proc = cp.spawn(this.config.dotnetPath, args, {
         cwd: path.dirname(projectPath),
         env: { ...process.env },
@@ -77,10 +77,7 @@ export class TestDiscovery {
 
       proc.on('close', async (code) => {
         if (code !== 0) {
-          // --no-build might fail if not built; retry with build
-          logVerbose(`--list-tests --no-build failed (code ${code}), retrying with build...`);
-          this.discoverTestsWithBuild(projectPath).then(resolve);
-          return;
+          logVerbose(`--list-tests failed (code ${code}), stderr: ${stderr}`);
         }
 
         const tests = this.parseTestList(stdout, project);

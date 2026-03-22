@@ -181,7 +181,6 @@ export class TestRunner {
       '--collect:XPlat Code Coverage',
       '--results-directory', coverageDir,
       '-v', 'q',
-      '--no-build',
     ];
 
     if (filterExpr) {
@@ -246,14 +245,7 @@ export class TestRunner {
 
       proc.on('error', (err) => {
         logError('dotnet test process error', err);
-        // Try fallback without --no-build
-        if (args.includes('--no-build')) {
-          logVerbose('Retrying without --no-build...');
-          const retryArgs = args.filter(a => a !== '--no-build');
-          this.executeWithArgs(retryArgs, item, tmpDir, coverageDir).then(resolve).catch(reject);
-        } else {
-          reject(err);
-        }
+        reject(err);
       });
     });
   }

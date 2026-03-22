@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2] - 2026-03-22
+
+### Fixed
+
+- **Tests now detect code changes** — removed `--no-build` flag from `dotnet test` so the project is recompiled before each test run. Previously, tests always ran against the last manually-built binary, so code changes (like adding exceptions) were never reflected in test results.
+- **Test discovery builds before listing** — new test methods are now found immediately without needing a manual build first
+
 ## [1.5.1] - 2026-03-22
 
 ### Fixed
