@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.0] - 2026-03-23
+
+### Fixed
+
+- **Gutter markers now appear** — fixed a path normalization bug in the coverage store where coverage data was stored with raw file paths but looked up with normalized paths, causing all lookups to return `undefined` and no decorations to render
+
 ## [1.5.2] - 2026-03-22
 
 ### Fixed

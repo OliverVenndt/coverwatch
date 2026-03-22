@@ -78,9 +78,10 @@ export class CoverageStore {
           const lineRate = parseFloat(cls['@_line-rate'] ?? '0');
           const branchRate = parseFloat(cls['@_branch-rate'] ?? '0');
 
-          const fc: FileCoverage = { filePath, lines, lineRate, branchRate };
+          const normalizedFilePath = this.normalizePath(filePath);
+          const fc: FileCoverage = { filePath: normalizedFilePath, lines, lineRate, branchRate };
           results.push(fc);
-          this.fileCoverageCache.set(filePath, fc);
+          this.fileCoverageCache.set(normalizedFilePath, fc);
         }
       }
 

@@ -1,165 +1,162 @@
-# Coverwatch
+# Coverwatch — .NET Continuous Testing
 
-**Continuous testing engine for C#/.NET** — inspired by NCrunch.
+**Your tests run while you type. Every line of code turns green or red. You never press "Run Tests" again.**
 
-Coverwatch runs your tests automatically as you code, shows per-line coverage in the gutter, and uses **impact analysis** to only re-run the tests that matter. No buttons to press, no context switching — just instant feedback.
-
-![Coverwatch](media/icon.png)
+Coverwatch brings the continuous testing workflow to VS Code for C#/.NET. It watches your code, figures out which tests are affected by your changes using **impact analysis**, re-runs only those, and paints every line in your editor with live pass/fail coverage — all before you've switched to the terminal.
 
 ---
 
-## Features
+## See It In Action
 
-### 🔴🟢 Gutter Markers — Per-Line Coverage
+```
+ ✅  │  public decimal CalculateDiscount(Order order)
+ ✅  │  {
+ ✅  │      if (order.Total > 100)
+ 🔴  │          return order.Total * 0.15m;  ← test expects 0.10
+ ⚫  │      if (order.IsFirstOrder)           ← no test covers this
+ ⚫  │          return order.Total * 0.05m;
+ ✅  │      return 0;
+ ✅  │  }
+```
 
-Every line of your C# code gets a colored dot in the gutter:
+Every line gets a marker. Green means covered and passing. Red means a test is failing on that line. Gray means nothing tests it. Hover any marker to see exactly which tests touch that line.
 
-- **Green** — Covered by passing tests
-- **Red** — Covered by at least one failing test
-- **Gray** — Executable code not covered by any test
+---
 
-Hover over any dot to see exactly which tests cover that line, their pass/fail status, and execution time.
+## Why Coverwatch
 
-### ⚡ Impact Analysis — Only Run What Matters
+### You change code. Only the right tests re-run.
 
-When you save a file, Coverwatch doesn't re-run your entire test suite. It uses a **coverage map** to determine exactly which tests are affected by your change and runs only those. This means:
+Most test runners give you two options: run everything (slow) or pick tests manually (tedious). Coverwatch does neither.
 
-- Change a utility method → only the 3 tests that call it re-run
-- Change a test → only that test re-runs
-- No coverage data yet → falls back to running all tests in the project
+On the first run, it maps every line of your source code to the tests that execute it. After that, when you save a file, it diffs your changes, looks up which tests cover those lines, and runs only those. Three tests instead of three hundred.
 
-The coverage map is built on the first full run and refined with every subsequent run.
+The coverage map rebuilds itself with every run, so it stays accurate as your codebase evolves.
 
-### 📊 Sidebar — Test Explorer & Metrics
+### No buttons. No config files. No ceremony.
 
-A dedicated sidebar with three panels:
+Open a workspace with .NET test projects. Coverwatch detects them, runs the suite, builds the coverage map, and starts watching. You just write code.
 
-- **Tests** — Full test tree grouped by Project → Class → Method, with live status icons. Click any test to jump to its source.
-- **Processing Queue** — See what's running, what's queued, and what just completed.
-- **Metrics** — Real-time dashboard showing pass/fail counts, coverage stats, and engine status.
+### Everything you need, right in the editor.
 
-### 🔍 CodeLens — Inline Test Actions
+**Gutter markers** on every line — green, red, or gray.
 
-Above every test method you'll see:
+**CodeLens** above every test method — status, duration, one-click run, one-click debug, and the first line of any failure message.
 
-- **Status** — `✓ Passed (12ms)` or `✗ Failed`
-- **Run** — Click to run just this test
-- **Debug** — Click to launch the debugger on this test
-- **Error** — If failed, the first line of the error message
+**Sidebar** with a full test tree (Project → Class → Method), a processing queue showing what's running, and a metrics dashboard with pass/fail counts and coverage stats.
 
-### 📟 Status Bar
-
-A persistent status bar item shows the engine state and a quick summary: `Crunch: 42 ✓ 2 ✗`
+**Status bar** showing engine state and a live summary — `Coverwatch: 42 ✓ 2 ✗`.
 
 ---
 
 ## How It Works
 
-### Architecture
-
 ```
-File Watcher → Impact Analyzer → Test Runner → Results
-     ↓               ↓               ↓           ↓
-  .cs saves    Coverage Map    dotnet test    TRX + Coverlet
-                 lookup          + filter      parsing
-                                    ↓
-                              Decoration Engine
-                              CodeLens Provider
-                              Sidebar Updates
-                              Status Bar
+  You save a file
+       │
+       ▼
+  File Watcher detects the change, diffs old vs new content
+       │
+       ▼
+  Impact Analyzer looks up changed lines in the Coverage Map
+       │
+       ▼
+  Only affected tests are passed to the Test Runner
+       │
+       ▼
+  dotnet test --filter runs the subset with Coverlet coverage
+       │
+       ▼
+  Results parsed (TRX + Cobertura XML)
+       │
+       ▼
+  Coverage Map updated ──► Gutter markers refresh
+                        ──► CodeLens updates
+                        ──► Sidebar tree updates
+                        ──► Status bar updates
 ```
 
-### The Impact Analysis Loop
+**Cold start** — first run executes all tests with full coverage collection. Takes a bit.
 
-1. **Cold start**: Coverwatch runs your entire test suite with [Coverlet](https://github.com/coverlet-coverage/coverlet) collecting per-line coverage data
-2. **Coverage map built**: For every source file and line, the engine knows which test(s) touch it
-3. **You edit code**: The file watcher detects the change and diffs the old vs new content
-4. **Impact analysis**: Changed lines are looked up in the coverage map → affected test IDs returned
-5. **Targeted run**: Only the affected tests are executed via `dotnet test --filter`
-6. **Map updated**: New coverage data is merged back into the map
-7. **UI refreshed**: Gutter markers, CodeLens, sidebar, and status bar all update
-
-### Supported Frameworks
-
-- ✅ xUnit
-- ✅ NUnit
-- ✅ MSTest
-
-Coverwatch auto-detects your test framework from `.csproj` references.
+**Warm** — subsequent saves only trigger affected tests. Usually finishes before you've read the next line of code.
 
 ---
 
-## Requirements
+## Supported Test Frameworks
 
-- **.NET SDK 6.0+** installed and available on PATH (or configured via `coverwatch.dotnetPath`)
-- **Coverlet** — Your test projects need the `coverlet.collector` NuGet package for coverage collection:
-
-```bash
-dotnet add package coverlet.collector
-```
-
-Most .NET test project templates include this by default. If you're not sure, check your `.csproj` for a `<PackageReference Include="coverlet.collector" />`.
+Works with **xUnit**, **NUnit**, and **MSTest**. Auto-detected from your `.csproj` references.
 
 ---
 
 ## Getting Started
 
-1. Install the extension
-2. Open a workspace containing .NET test projects
-3. The engine starts automatically (or press `Ctrl+Shift+P` → "Coverwatch: Start Engine")
-4. Wait for the initial test run to complete
-5. Start coding — you'll see gutter markers appear and tests re-run on save
+**1.** Make sure your test projects include the Coverlet collector (most templates already do):
+
+```bash
+dotnet add package coverlet.collector
+```
+
+**2.** Install Coverwatch from the VS Code Marketplace.
+
+**3.** Open a workspace containing .NET test projects.
+
+**4.** That's it. The engine starts automatically, runs your suite, and from then on you just code.
+
+If you prefer to start manually: `Ctrl+Shift+P` → **Coverwatch: Start Engine**.
 
 ---
 
-## Extension Settings
+## Configuration
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `coverwatch.autoStart` | `true` | Automatically start when a test project is detected |
-| `coverwatch.runOnSave` | `true` | Run affected tests on file save |
-| `coverwatch.runOnChange` | `false` | Run affected tests on every keystroke (with debounce) |
-| `coverwatch.debounceMs` | `500` | Debounce delay for `runOnChange` mode |
-| `coverwatch.maxParallelRuns` | `2` | Max concurrent `dotnet test` processes |
-| `coverwatch.coverageThreshold` | `80` | Coverage percentage target |
-| `coverwatch.excludePatterns` | `["**/obj/**", "**/bin/**", "**/Migrations/**"]` | File patterns to ignore |
-| `coverwatch.dotnetPath` | `"dotnet"` | Path to the `dotnet` CLI |
-| `coverwatch.showGutterMarkers` | `true` | Show coverage dots in the gutter |
-| `coverwatch.showCodeLens` | `true` | Show test status above test methods |
-| `coverwatch.verboseOutput` | `false` | Enable detailed logging |
+All settings live under `coverwatch.*` in your VS Code settings.
+
+| Setting | Default | What it does |
+|---|---|---|
+| `autoStart` | `true` | Start the engine when a test project is detected |
+| `runOnSave` | `true` | Trigger affected tests on file save |
+| `runOnChange` | `false` | Trigger on every keystroke (with debounce) — more responsive, heavier on CPU |
+| `debounceMs` | `500` | Debounce delay when `runOnChange` is enabled |
+| `maxParallelRuns` | `2` | Concurrent `dotnet test` processes |
+| `coverageThreshold` | `80` | Target coverage percentage for the metrics panel |
+| `excludePatterns` | `[**/obj/**, **/bin/**, **/Migrations/**]` | Glob patterns to ignore |
+| `dotnetPath` | `"dotnet"` | Custom path to the .NET CLI |
+| `showGutterMarkers` | `true` | Toggle the coverage dots |
+| `showCodeLens` | `true` | Toggle the inline test actions |
+| `verboseOutput` | `false` | Detailed logging in the output channel |
 
 ---
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `Coverwatch: Start Engine` | Start watching and running tests |
-| `Coverwatch: Stop Engine` | Stop the engine |
-| `Coverwatch: Run All Tests` | Re-run the entire test suite |
-| `Coverwatch: Reset Coverage Map` | Clear coverage data and re-run all tests |
-| `Coverwatch: Toggle Gutter Markers` | Show/hide the gutter dots |
-| `Coverwatch: Show Dashboard` | Open the output channel |
+| Command | What it does |
+|---|---|
+| **Start Engine** | Begin watching and running tests |
+| **Stop Engine** | Pause everything |
+| **Run All Tests** | Force a full re-run of the entire suite |
+| **Reset Coverage Map** | Clear the map and rebuild from scratch |
+| **Toggle Gutter Markers** | Show or hide the dots |
+| **Show Dashboard** | Open the output channel for logs |
 
 ---
 
-## Tips
+## Requirements
 
-- **First run is slow** — it builds and runs everything with coverage. Subsequent runs are fast because they're targeted.
-- **Add `coverlet.collector`** to all test projects for coverage to work.
-- **Use `runOnChange`** if you want NCrunch-level responsiveness, but be aware it's heavier on CPU.
-- **Check the output channel** ("Coverwatch" in the Output panel) for detailed logs if something isn't working.
+- .NET SDK 6.0 or later
+- `coverlet.collector` NuGet package in your test projects
+- The C# extension (for debug support)
 
 ---
 
-## Known Limitations
+## Good to Know
 
-- Coverage-based impact analysis requires at least one full test run to build the initial map. Until then, all tests in the affected project are run.
-- Very large solutions (1000+ tests) may benefit from increasing `maxParallelRuns`.
-- The debug command requires the C# extension with `coreclr` debugger support.
+The **first run takes longer** because it builds everything and collects full coverage. Every run after that is targeted and fast.
+
+If something seems off, open the **Coverwatch** output channel — it logs every decision the engine makes: which files changed, which tests were selected, and how long each run took.
+
+For very large solutions (1000+ tests), try bumping `maxParallelRuns` to 4.
 
 ---
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT
