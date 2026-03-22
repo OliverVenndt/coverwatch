@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0] - 2026-03-22
+
+### Added
+
+- **Filter toggles** — toolbar buttons to show/hide passed, failed, or other (stale/unknown/skipped) tests in the tree view
+- **Settings icon** — gear icon in the test tree title bar opens extension settings
+- **Pinned tests** — pin individual tests or entire classes; pinned tests sort to top and persist across sessions
+- **Coverage line totals** — metrics panel now shows "covered / total (X%)" with a color-coded progress bar and threshold indicator
+
+### Fixed
+
+- **Coverage percentage** — fixed bug where coverage always showed 100% (was dividing covered lines by itself)
+
 ## [1.1.0] - 2026-03-22
 
 ### Added

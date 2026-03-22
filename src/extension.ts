@@ -24,6 +24,14 @@ function extractTestId(arg: unknown): string | undefined {
   return undefined;
 }
 
+function extractClassName(arg: unknown): string | undefined {
+  if (typeof arg === 'string') { return arg; }
+  if (arg && typeof arg === 'object' && 'name' in arg && 'children' in arg) {
+    return (arg as { name: string }).name;
+  }
+  return undefined;
+}
+
 export function activate(context: vscode.ExtensionContext): void {
   const outputChannel = vscode.window.createOutputChannel('DotNet Crunch');
   const config = loadConfig();
@@ -49,6 +57,28 @@ export function activate(context: vscode.ExtensionContext): void {
       if (testId) { engine?.debugTest(testId); }
     }),
     vscode.commands.registerCommand('dotnetCrunch.showDashboard', () => outputChannel.show()),
+    vscode.commands.registerCommand('dotnetCrunch.openSettings', () =>
+      vscode.commands.executeCommand('workbench.action.openSettings', 'dotnetCrunch')
+    ),
+    vscode.commands.registerCommand('dotnetCrunch.filterPassed', () => engine?.toggleFilter('passed')),
+    vscode.commands.registerCommand('dotnetCrunch.filterFailed', () => engine?.toggleFilter('failed')),
+    vscode.commands.registerCommand('dotnetCrunch.filterOther', () => engine?.toggleFilter('other')),
+    vscode.commands.registerCommand('dotnetCrunch.pinTest', (arg: unknown) => {
+      const testId = extractTestId(arg);
+      if (testId) { engine?.togglePinTest(testId); }
+    }),
+    vscode.commands.registerCommand('dotnetCrunch.unpinTest', (arg: unknown) => {
+      const testId = extractTestId(arg);
+      if (testId) { engine?.togglePinTest(testId); }
+    }),
+    vscode.commands.registerCommand('dotnetCrunch.pinClass', (arg: unknown) => {
+      const className = extractClassName(arg);
+      if (className) { engine?.togglePinClass(className); }
+    }),
+    vscode.commands.registerCommand('dotnetCrunch.unpinClass', (arg: unknown) => {
+      const className = extractClassName(arg);
+      if (className) { engine?.togglePinClass(className); }
+    }),
   );
 
   // Watch for config changes
@@ -240,6 +270,9 @@ class CrunchEngine implements vscode.Disposable {
         await this.testDiscovery.discoverTests(project.projectPath);
       }
 
+      // Restore pinned state from previous session
+      this.restorePinnedTests();
+
       // Refresh tree
       this.testTreeProvider.refresh();
       this.metricsProvider.refresh();
@@ -343,6 +376,49 @@ class CrunchEngine implements vscode.Disposable {
     };
 
     await vscode.debug.startDebugging(undefined, debugConfig);
+  }
+
+  /**
+   * Toggle a tree view filter.
+   */
+  toggleFilter(filter: 'passed' | 'failed' | 'other'): void {
+    this.testTreeProvider.setFilter(filter);
+  }
+
+  /**
+   * Toggle pin on a single test.
+   */
+  togglePinTest(testId: string): void {
+    const test = this.testDiscovery.findTestById(testId);
+    if (!test) { return; }
+    test.isPinned = !test.isPinned;
+    this.savePinnedTests();
+    this.testTreeProvider.refresh();
+  }
+
+  /**
+   * Toggle pin on all tests in a class.
+   */
+  togglePinClass(className: string): void {
+    const allTests = this.testDiscovery.getAllTests().filter(t => t.className === className);
+    const allPinned = allTests.every(t => t.isPinned);
+    for (const test of allTests) { test.isPinned = !allPinned; }
+    this.savePinnedTests();
+    this.testTreeProvider.refresh();
+  }
+
+  private savePinnedTests(): void {
+    const pinnedIds = this.testDiscovery.getAllTests()
+      .filter(t => t.isPinned).map(t => t.testId);
+    this.context.globalState.update('dotnetCrunch.pinnedTests', pinnedIds);
+  }
+
+  private restorePinnedTests(): void {
+    const pinnedIds = this.context.globalState.get<string[]>('dotnetCrunch.pinnedTests', []);
+    const pinnedSet = new Set(pinnedIds);
+    for (const test of this.testDiscovery.getAllTests()) {
+      if (pinnedSet.has(test.testId)) { test.isPinned = true; }
+    }
   }
 
   /**

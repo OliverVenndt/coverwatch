@@ -34,10 +34,26 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
   private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode | undefined>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
+  // Filter state — all visible by default
+  private showPassed = true;
+  private showFailed = true;
+  private showOther = true; // stale, unknown, skipped, queued, running
+
   constructor(private testDiscovery: TestDiscovery) {}
 
   refresh(): void {
     this._onDidChangeTreeData.fire(undefined);
+  }
+
+  setFilter(filter: 'passed' | 'failed' | 'other'): void {
+    if (filter === 'passed') { this.showPassed = !this.showPassed; }
+    else if (filter === 'failed') { this.showFailed = !this.showFailed; }
+    else { this.showOther = !this.showOther; }
+    this.refresh();
+  }
+
+  getFilterState(): { showPassed: boolean; showFailed: boolean; showOther: boolean } {
+    return { showPassed: this.showPassed, showFailed: this.showFailed, showOther: this.showOther };
   }
 
   getTreeItem(element: TreeNode): vscode.TreeItem {
@@ -52,7 +68,8 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     if (element instanceof ClassNode) {
       const item = new vscode.TreeItem(element.name, vscode.TreeItemCollapsibleState.Expanded);
       item.iconPath = new vscode.ThemeIcon('symbol-class');
-      item.contextValue = 'testClass';
+      const allPinned = element.children.length > 0 && element.children.every(t => t.testInfo.isPinned);
+      item.contextValue = allPinned ? 'testClass-pinned' : 'testClass';
       item.description = this.getClassDescription(element);
       return item;
     }
@@ -61,10 +78,11 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     const test = element.testInfo;
     const item = new vscode.TreeItem(test.displayName, vscode.TreeItemCollapsibleState.None);
     item.iconPath = this.getTestIcon(test);
-    item.contextValue = `test-${test.status}`;
+    item.contextValue = `test-${test.status}${test.isPinned ? '-pinned' : ''}`;
     item.tooltip = this.getTestTooltip(test);
 
     const descParts: string[] = [];
+    if (test.isPinned) { descParts.push('pinned'); }
     if (test.isStale) { descParts.push('stale'); }
     if (test.lastResult?.duration) { descParts.push(`${test.lastResult.duration}ms`); }
     if (descParts.length > 0) { item.description = descParts.join(' \u00B7 '); }
@@ -104,6 +122,7 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
       // Group tests by class
       const classBuckets = new Map<string, TestInfo[]>();
       for (const test of project.tests.values()) {
+        if (!this.matchesFilter(test)) { continue; }
         const className = test.className || 'Unknown';
         if (!classBuckets.has(className)) {
           classBuckets.set(className, []);
@@ -113,17 +132,33 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
       const classNodes: ClassNode[] = [];
       for (const [className, tests] of classBuckets) {
+        // Sort: pinned first, then alphabetical
         const testNodes = tests
-          .sort((a, b) => a.displayName.localeCompare(b.displayName))
+          .sort((a, b) => {
+            if (a.isPinned && !b.isPinned) { return -1; }
+            if (!a.isPinned && b.isPinned) { return 1; }
+            return a.displayName.localeCompare(b.displayName);
+          })
           .map(t => new TestNode(t));
         classNodes.push(new ClassNode(className, testNodes));
       }
+
+      if (classNodes.length === 0) { continue; }
 
       classNodes.sort((a, b) => a.name.localeCompare(b.name));
       projects.push(new ProjectNode(project.name, projectPath, classNodes));
     }
 
     return projects.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  private matchesFilter(test: TestInfo): boolean {
+    if (test.isStale) { return this.showOther; }
+    switch (test.status) {
+      case TestStatus.Passed: return this.showPassed;
+      case TestStatus.Failed: return this.showFailed;
+      default: return this.showOther;
+    }
   }
 
   private getTestIcon(test: TestInfo): vscode.ThemeIcon {

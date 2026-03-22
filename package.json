@@ -2,15 +2,15 @@
   "name": "dotnet-crunch",
   "displayName": "DotNet Crunch",
   "description": "Continuous testing engine for C#/.NET — inspired by NCrunch. Automatic test execution, per-line coverage gutter markers, impact analysis, and a real-time test sidebar.",
-  "version": "1.1.0",
-  "publisher": "mover-systems",
+  "version": "1.2.0",
+  "publisher": "Oliver Venndt",
   "author": {
-    "name": "Oliver @ Mover Systems"
+    "name": "Oliver Venndt"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mover-systems/dotnet-crunch"
+    "url": "https://github.com/OliverVenndt/dotnet-crunch"
   },
   "engines": {
     "vscode": "^1.85.0"
@@ -88,6 +88,54 @@
         "title": "Show Dashboard",
         "category": "DotNet Crunch",
         "icon": "$(dashboard)"
+      },
+      {
+        "command": "dotnetCrunch.openSettings",
+        "title": "Open Settings",
+        "category": "DotNet Crunch",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "dotnetCrunch.filterPassed",
+        "title": "Toggle Passed Tests",
+        "category": "DotNet Crunch",
+        "icon": "$(pass-filled)"
+      },
+      {
+        "command": "dotnetCrunch.filterFailed",
+        "title": "Toggle Failed Tests",
+        "category": "DotNet Crunch",
+        "icon": "$(error)"
+      },
+      {
+        "command": "dotnetCrunch.filterOther",
+        "title": "Toggle Other Tests",
+        "category": "DotNet Crunch",
+        "icon": "$(circle-outline)"
+      },
+      {
+        "command": "dotnetCrunch.pinTest",
+        "title": "Pin Test",
+        "category": "DotNet Crunch",
+        "icon": "$(pinned)"
+      },
+      {
+        "command": "dotnetCrunch.unpinTest",
+        "title": "Unpin Test",
+        "category": "DotNet Crunch",
+        "icon": "$(pin)"
+      },
+      {
+        "command": "dotnetCrunch.pinClass",
+        "title": "Pin Class",
+        "category": "DotNet Crunch",
+        "icon": "$(pinned)"
+      },
+      {
+        "command": "dotnetCrunch.unpinClass",
+        "title": "Unpin Class",
+        "category": "DotNet Crunch",
+        "icon": "$(pin)"
       }
     ],
     "viewsContainers": {
@@ -149,6 +197,26 @@
           "command": "dotnetCrunch.resetCoverage",
           "when": "view == dotnetCrunch.tests",
           "group": "navigation"
+        },
+        {
+          "command": "dotnetCrunch.filterPassed",
+          "when": "view == dotnetCrunch.tests",
+          "group": "navigation"
+        },
+        {
+          "command": "dotnetCrunch.filterFailed",
+          "when": "view == dotnetCrunch.tests",
+          "group": "navigation"
+        },
+        {
+          "command": "dotnetCrunch.filterOther",
+          "when": "view == dotnetCrunch.tests",
+          "group": "navigation"
+        },
+        {
+          "command": "dotnetCrunch.openSettings",
+          "when": "view == dotnetCrunch.tests",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -160,6 +228,26 @@
         {
           "command": "dotnetCrunch.debugTest",
           "when": "view == dotnetCrunch.tests && viewItem =~ /^test/",
+          "group": "inline"
+        },
+        {
+          "command": "dotnetCrunch.pinTest",
+          "when": "view == dotnetCrunch.tests && viewItem =~ /^test/ && viewItem =~ /^((?!pinned).)*$/",
+          "group": "inline"
+        },
+        {
+          "command": "dotnetCrunch.unpinTest",
+          "when": "view == dotnetCrunch.tests && viewItem =~ /^test/ && viewItem =~ /pinned/",
+          "group": "inline"
+        },
+        {
+          "command": "dotnetCrunch.pinClass",
+          "when": "view == dotnetCrunch.tests && viewItem == testClass",
+          "group": "inline"
+        },
+        {
+          "command": "dotnetCrunch.unpinClass",
+          "when": "view == dotnetCrunch.tests && viewItem == testClass-pinned",
           "group": "inline"
         }
       ]

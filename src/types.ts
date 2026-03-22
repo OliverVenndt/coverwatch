@@ -36,6 +36,7 @@ export interface TestInfo {
   lastResult?: TestResult;
   lastRunTime?: number;
   isStale?: boolean;
+  isPinned?: boolean;
 }
 
 // ── Coverage ─────────────────────────────────────────────────────────

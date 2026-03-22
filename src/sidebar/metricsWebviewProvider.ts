@@ -51,8 +51,8 @@ export class MetricsWebviewProvider implements vscode.WebviewViewProvider {
     const notRun = total - passed - failed - skipped;
 
     const metrics = this.coverageStore.getMetrics();
-    const coveragePct = metrics.totalFiles > 0
-      ? Math.round((metrics.totalCoveredLines / Math.max(1, metrics.totalCoveredLines)) * 100)
+    const coveragePct = metrics.totalInstrumentedLines > 0
+      ? Math.round((metrics.totalCoveredLines / metrics.totalInstrumentedLines) * 100)
       : 0;
 
     const engineColor = this.engineState === EngineState.Running ? '#22c55e'
@@ -213,9 +213,16 @@ export class MetricsWebviewProvider implements vscode.WebviewViewProvider {
     </div>
     <div class="info-row">
       <span>Lines covered</span>
-      <span class="info-value">${metrics.totalCoveredLines.toLocaleString()}</span>
+      <span class="info-value">${metrics.totalCoveredLines.toLocaleString()} / ${metrics.totalInstrumentedLines.toLocaleString()} (${coveragePct}%)</span>
     </div>
-    <div class="info-row">
+    <div class="bar">
+      <div class="bar-fill" style="width: ${coveragePct}%; background: ${coveragePct >= this.config.coverageThreshold ? '#22c55e' : '#ef4444'};"></div>
+    </div>
+    <div class="coverage-row">
+      <span class="threshold-label">Threshold: ${this.config.coverageThreshold}%</span>
+      <span class="threshold-label">${coveragePct}%</span>
+    </div>
+    <div class="info-row" style="margin-top: 8px;">
       <span>Tests with coverage</span>
       <span class="info-value">${metrics.totalTests}</span>
     </div>

@@ -233,14 +233,19 @@ export class CoverageStore {
   /**
    * Get aggregate metrics.
    */
-  getMetrics(): { totalFiles: number; totalCoveredLines: number; totalTests: number } {
+  getMetrics(): { totalFiles: number; totalCoveredLines: number; totalInstrumentedLines: number; totalTests: number } {
     let totalCoveredLines = 0;
-    for (const fileMap of Object.values(this.reverseMap)) {
-      totalCoveredLines += Object.keys(fileMap).length;
+    let totalInstrumentedLines = 0;
+    for (const fc of this.fileCoverageCache.values()) {
+      totalInstrumentedLines += fc.lines.length;
+      for (const line of fc.lines) {
+        if (line.hits > 0) { totalCoveredLines++; }
+      }
     }
     return {
-      totalFiles: Object.keys(this.reverseMap).length,
+      totalFiles: this.fileCoverageCache.size,
       totalCoveredLines,
+      totalInstrumentedLines,
       totalTests: Object.keys(this.forwardMap).length,
     };
   }
