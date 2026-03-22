@@ -117,14 +117,34 @@ export class FileWatcher implements vscode.Disposable {
 
     const fsPath = uri.fsPath;
     for (const pattern of this.config.excludePatterns) {
-      // Simple glob matching for common patterns
-      const normalized = pattern.replace(/\*\*/g, '').replace(/\*/g, '');
-      if (fsPath.includes(normalized.replace(/\//g, path.sep))) {
+      if (this.matchGlob(fsPath, pattern)) {
         return false;
       }
     }
 
     return true;
+  }
+
+  /**
+   * Match a file path against a glob pattern.
+   * Supports ** (any directory depth), * (any segment), and literal segments.
+   */
+  private matchGlob(filePath: string, pattern: string): boolean {
+    // Normalize separators
+    const normalized = filePath.replace(/\\/g, '/');
+    // Convert glob to regex
+    const regexStr = pattern
+      .replace(/\\/g, '/')
+      .replace(/\./g, '\\.')
+      .replace(/\*\*\//g, '(.+/)?')
+      .replace(/\*\*/g, '.*')
+      .replace(/\*/g, '[^/]*')
+      .replace(/\?/g, '[^/]');
+    try {
+      return new RegExp(regexStr).test(normalized);
+    } catch {
+      return false;
+    }
   }
 
   updateConfig(config: CoverwatchConfig): void {

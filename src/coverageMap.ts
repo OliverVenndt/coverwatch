@@ -1,8 +1,11 @@
 import * as path from 'path';
 import * as fs from 'fs';
+import * as vscode from 'vscode';
 import { XMLParser } from 'fast-xml-parser';
 import { CoverageMap, PerTestCoverage, FileCoverage, LineCoverage } from './types';
 import { log, logVerbose, logError } from './logger';
+
+const MAX_XML_SIZE = 50 * 1024 * 1024; // 50 MB
 
 /**
  * Manages the coverage map: a bidirectional mapping between source lines and tests.
@@ -26,6 +29,13 @@ export class CoverageStore {
    */
   parseCoberturaXml(xmlPath: string): FileCoverage[] {
     try {
+      // Guard against oversized XML files (DoS prevention)
+      const stat = fs.statSync(xmlPath);
+      if (stat.size > MAX_XML_SIZE) {
+        logError(`Cobertura XML too large (${Math.round(stat.size / 1024 / 1024)}MB), skipping`);
+        return [];
+      }
+
       const xml = fs.readFileSync(xmlPath, 'utf-8');
       const parser = new XMLParser({
         ignoreAttributes: false,
@@ -62,6 +72,17 @@ export class CoverageStore {
           }
           if (!resolved) {
             log(`Coverage: could not resolve path "${fileName}" (sources: ${sources.join(', ')})`);
+          }
+
+          // Validate path stays within workspace (path traversal prevention)
+          const workspaceRoots = vscode.workspace.workspaceFolders?.map(f => f.uri.fsPath) ?? [];
+          if (resolved && workspaceRoots.length > 0) {
+            const absPath = path.resolve(filePath);
+            const inWorkspace = workspaceRoots.some(root => absPath.startsWith(root));
+            if (!inWorkspace) {
+              logVerbose(`Coverage: skipping path outside workspace: ${absPath}`);
+              continue;
+            }
           }
 
           const lines: LineCoverage[] = [];

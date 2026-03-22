@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.0] - 2026-03-23
+
+### Security
+
+- **Upgraded fast-xml-parser** from 4.3.3 to 5.5.8 — fixes XXE and entity expansion vulnerabilities (CVE-2026-26278)
+- **Path traversal prevention** — coverage file paths from Cobertura XML are now validated to stay within the workspace; paths outside the workspace are rejected
+- **Secure temp directories** — temp dirs now use cryptographically random names and restrictive permissions (0o700) instead of predictable sequential IDs
+- **Depth-limited file search** — recursive file search is now capped at 10 levels to prevent stack overflow from symlink loops
+- **Restricted environment variables** — spawned dotnet processes now receive only the variables they need (PATH, HOME, DOTNET_ROOT, etc.) instead of the full environment
+- **XML file size limits** — Cobertura XML and TRX files larger than 50MB are rejected to prevent memory exhaustion
+- **Proper glob matching** — file watcher exclude patterns now use real glob matching instead of naive string-contains which could false-match unrelated paths
+
 ## [1.7.2] - 2026-03-23
 
 ### Fixed

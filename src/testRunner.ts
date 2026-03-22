@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
+import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -145,9 +146,10 @@ export class TestRunner {
       return;
     }
 
-    // Create temp directory for results
-    const tmpDir = path.join(os.tmpdir(), 'coverwatch', item.id);
-    fs.mkdirSync(tmpDir, { recursive: true });
+    // Create temp directory with random name and restrictive permissions
+    const randomSuffix = crypto.randomBytes(8).toString('hex');
+    const tmpDir = path.join(os.tmpdir(), `coverwatch-${randomSuffix}`);
+    fs.mkdirSync(tmpDir, { recursive: true, mode: 0o700 });
 
     const trxPath = path.join(tmpDir, 'results.trx');
     const coverageDir = path.join(tmpDir, 'coverage');
@@ -193,10 +195,7 @@ export class TestRunner {
     return new Promise<void>((resolve, reject) => {
       const proc = cp.spawn(this.config.dotnetPath, args, {
         cwd: path.dirname(item.projectPath),
-        env: {
-          ...process.env,
-          DOTNET_CLI_TELEMETRY_OPTOUT: '1',
-        },
+        env: this.getSafeEnv(),
       });
 
       let stdout = '';
@@ -256,6 +255,7 @@ export class TestRunner {
     return new Promise<void>((resolve, reject) => {
       const proc = cp.spawn(this.config.dotnetPath, args, {
         cwd: path.dirname(item.projectPath),
+        env: this.getSafeEnv(),
       });
 
       let stdout = '';
@@ -285,6 +285,12 @@ export class TestRunner {
    */
   private parseTrxResults(trxPath: string, item: QueueItem): void {
     try {
+      const stat = fs.statSync(trxPath);
+      if (stat.size > 50 * 1024 * 1024) {
+        logError(`TRX file too large (${Math.round(stat.size / 1024 / 1024)}MB), skipping`);
+        return;
+      }
+
       const xml = fs.readFileSync(trxPath, 'utf-8');
       const parser = new XMLParser({
         ignoreAttributes: false,
@@ -406,17 +412,17 @@ export class TestRunner {
   }
 
   /**
-   * Recursively find files matching a pattern.
+   * Recursively find files matching a pattern (depth-limited).
    */
-  private findFiles(dir: string, pattern: string): string[] {
+  private findFiles(dir: string, pattern: string, maxDepth = 10): string[] {
     const results: string[] = [];
-    if (!fs.existsSync(dir)) { return results; }
+    if (!fs.existsSync(dir) || maxDepth <= 0) { return results; }
 
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
-        results.push(...this.findFiles(fullPath, pattern));
+        results.push(...this.findFiles(fullPath, pattern, maxDepth - 1));
       } else if (entry.name.includes(pattern) || entry.name.endsWith(pattern)) {
         results.push(fullPath);
       }
@@ -426,6 +432,32 @@ export class TestRunner {
 
   private ensureArray<T>(value: T | T[]): T[] {
     return Array.isArray(value) ? value : value ? [value] : [];
+  }
+
+  /**
+   * Build a safe environment for spawned processes.
+   * Only passes through variables needed for dotnet to function.
+   */
+  private getSafeEnv(): NodeJS.ProcessEnv {
+    const env: NodeJS.ProcessEnv = {
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1',
+      PATH: process.env.PATH,
+      HOME: process.env.HOME,
+      USERPROFILE: process.env.USERPROFILE,
+      TEMP: process.env.TEMP,
+      TMP: process.env.TMP,
+      TMPDIR: process.env.TMPDIR,
+      LANG: process.env.LANG,
+      DOTNET_ROOT: process.env.DOTNET_ROOT,
+      DOTNET_HOST_PATH: process.env.DOTNET_HOST_PATH,
+      NUGET_PACKAGES: process.env.NUGET_PACKAGES,
+      DOTNET_MULTILEVEL_LOOKUP: process.env.DOTNET_MULTILEVEL_LOOKUP,
+    };
+    // Remove undefined values
+    for (const key of Object.keys(env)) {
+      if (env[key] === undefined) { delete env[key]; }
+    }
+    return env;
   }
 
   getQueue(): QueueItem[] {
