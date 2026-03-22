@@ -1,0 +1,271 @@
+{
+  "name": "dotnet-crunch",
+  "displayName": "DotNet Crunch",
+  "description": "Continuous testing engine for C#/.NET — inspired by NCrunch. Automatic test execution, per-line coverage gutter markers, impact analysis, and a real-time test sidebar.",
+  "version": "1.0.0",
+  "publisher": "mover-systems",
+  "author": {
+    "name": "Oliver @ Mover Systems"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mover-systems/dotnet-crunch"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Testing",
+    "Other"
+  ],
+  "keywords": [
+    "dotnet",
+    "csharp",
+    "ncrunch",
+    "continuous testing",
+    "test coverage",
+    "tdd",
+    "xunit",
+    "nunit",
+    "mstest"
+  ],
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1e1e2e",
+    "theme": "dark"
+  },
+  "activationEvents": [
+    "workspaceContains:**/*.csproj",
+    "workspaceContains:**/*.sln"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "dotnetCrunch.start",
+        "title": "Start Engine",
+        "category": "DotNet Crunch",
+        "icon": "$(play)"
+      },
+      {
+        "command": "dotnetCrunch.stop",
+        "title": "Stop Engine",
+        "category": "DotNet Crunch",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "dotnetCrunch.runAll",
+        "title": "Run All Tests",
+        "category": "DotNet Crunch",
+        "icon": "$(run-all)"
+      },
+      {
+        "command": "dotnetCrunch.resetCoverage",
+        "title": "Reset Coverage Map",
+        "category": "DotNet Crunch",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "dotnetCrunch.toggleGutter",
+        "title": "Toggle Gutter Markers",
+        "category": "DotNet Crunch"
+      },
+      {
+        "command": "dotnetCrunch.runTest",
+        "title": "Run This Test",
+        "category": "DotNet Crunch",
+        "icon": "$(play)"
+      },
+      {
+        "command": "dotnetCrunch.debugTest",
+        "title": "Debug This Test",
+        "category": "DotNet Crunch",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "dotnetCrunch.showDashboard",
+        "title": "Show Dashboard",
+        "category": "DotNet Crunch",
+        "icon": "$(dashboard)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "dotnetCrunch",
+          "title": "DotNet Crunch",
+          "icon": "media/sidebar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "dotnetCrunch": [
+        {
+          "id": "dotnetCrunch.tests",
+          "name": "Tests",
+          "icon": "$(beaker)",
+          "contextualTitle": "DotNet Crunch Tests"
+        },
+        {
+          "id": "dotnetCrunch.queue",
+          "name": "Processing Queue",
+          "icon": "$(list-ordered)",
+          "contextualTitle": "DotNet Crunch Queue",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "dotnetCrunch.metrics",
+          "name": "Metrics",
+          "type": "webview",
+          "contextualTitle": "DotNet Crunch Metrics"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "dotnetCrunch.tests",
+        "contents": "No .NET test projects found.\n[Start Engine](command:dotnetCrunch.start)\nMake sure your workspace contains .csproj files with test frameworks (xUnit, NUnit, MSTest)."
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "dotnetCrunch.start",
+          "when": "view == dotnetCrunch.tests && !dotnetCrunch.running",
+          "group": "navigation"
+        },
+        {
+          "command": "dotnetCrunch.stop",
+          "when": "view == dotnetCrunch.tests && dotnetCrunch.running",
+          "group": "navigation"
+        },
+        {
+          "command": "dotnetCrunch.runAll",
+          "when": "view == dotnetCrunch.tests && dotnetCrunch.running",
+          "group": "navigation"
+        },
+        {
+          "command": "dotnetCrunch.resetCoverage",
+          "when": "view == dotnetCrunch.tests",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "dotnetCrunch.runTest",
+          "when": "view == dotnetCrunch.tests && viewItem =~ /^test/",
+          "group": "inline"
+        },
+        {
+          "command": "dotnetCrunch.debugTest",
+          "when": "view == dotnetCrunch.tests && viewItem =~ /^test/",
+          "group": "inline"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "DotNet Crunch",
+      "properties": {
+        "dotnetCrunch.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically start the engine when a .NET test project is detected."
+        },
+        "dotnetCrunch.debounceMs": {
+          "type": "number",
+          "default": 500,
+          "minimum": 100,
+          "maximum": 5000,
+          "description": "Delay in milliseconds before triggering test run after file change."
+        },
+        "dotnetCrunch.runOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run affected tests automatically on file save."
+        },
+        "dotnetCrunch.runOnChange": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run affected tests on every keystroke (with debounce). More responsive but heavier."
+        },
+        "dotnetCrunch.maxParallelRuns": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 8,
+          "description": "Maximum number of parallel dotnet test processes."
+        },
+        "dotnetCrunch.coverageThreshold": {
+          "type": "number",
+          "default": 80,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Coverage percentage threshold for the metrics panel."
+        },
+        "dotnetCrunch.excludePatterns": {
+          "type": "array",
+          "default": [
+            "**/obj/**",
+            "**/bin/**",
+            "**/Migrations/**"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Glob patterns for files to exclude from watching."
+        },
+        "dotnetCrunch.dotnetPath": {
+          "type": "string",
+          "default": "dotnet",
+          "description": "Path to the dotnet CLI executable."
+        },
+        "dotnetCrunch.showGutterMarkers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show coverage and test status markers in the editor gutter."
+        },
+        "dotnetCrunch.showCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show test status CodeLens above test methods."
+        },
+        "dotnetCrunch.verboseOutput": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable verbose logging in the output channel."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "deploy": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^2.22.0",
+    "eslint": "^8.56.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.3.3",
+    "glob": "^10.3.10"
+  }
+}
