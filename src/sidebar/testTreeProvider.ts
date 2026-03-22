@@ -60,13 +60,14 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     // TestNode
     const test = element.testInfo;
     const item = new vscode.TreeItem(test.displayName, vscode.TreeItemCollapsibleState.None);
-    item.iconPath = this.getTestIcon(test.status);
+    item.iconPath = this.getTestIcon(test);
     item.contextValue = `test-${test.status}`;
     item.tooltip = this.getTestTooltip(test);
 
-    if (test.lastResult?.duration) {
-      item.description = `${test.lastResult.duration}ms`;
-    }
+    const descParts: string[] = [];
+    if (test.isStale) { descParts.push('stale'); }
+    if (test.lastResult?.duration) { descParts.push(`${test.lastResult.duration}ms`); }
+    if (descParts.length > 0) { item.description = descParts.join(' \u00B7 '); }
 
     // Click to navigate to test source
     if (test.sourceFile && test.sourceLine) {
@@ -125,8 +126,15 @@ export class TestTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     return projects.sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  private getTestIcon(status: TestStatus): vscode.ThemeIcon {
-    switch (status) {
+  private getTestIcon(test: TestInfo): vscode.ThemeIcon {
+    if (test.isStale) {
+      switch (test.status) {
+        case TestStatus.Passed: return new vscode.ThemeIcon('pass', new vscode.ThemeColor('testing.iconQueued'));
+        case TestStatus.Failed: return new vscode.ThemeIcon('warning', new vscode.ThemeColor('testing.iconQueued'));
+        default: return new vscode.ThemeIcon('circle-outline', new vscode.ThemeColor('testing.iconUnset'));
+      }
+    }
+    switch (test.status) {
       case TestStatus.Passed: return new vscode.ThemeIcon('pass-filled', new vscode.ThemeColor('testing.iconPassed'));
       case TestStatus.Failed: return new vscode.ThemeIcon('error', new vscode.ThemeColor('testing.iconFailed'));
       case TestStatus.Running: return new vscode.ThemeIcon('sync~spin', new vscode.ThemeColor('testing.iconQueued'));

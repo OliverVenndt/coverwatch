@@ -26,14 +26,13 @@ export class FileWatcher implements vscode.Disposable {
   start(): void {
     this.stop();
 
-    if (this.config.runOnSave) {
-      const saveWatcher = vscode.workspace.onDidSaveTextDocument((doc) => {
-        if (this.shouldWatch(doc.uri)) {
-          this.handleChange(doc);
-        }
-      });
-      this.watchers.push(saveWatcher);
-    }
+    // Always watch saves (needed for stale test detection even in manual mode)
+    const saveWatcher = vscode.workspace.onDidSaveTextDocument((doc) => {
+      if (this.shouldWatch(doc.uri)) {
+        this.handleChange(doc);
+      }
+    });
+    this.watchers.push(saveWatcher);
 
     if (this.config.runOnChange) {
       const changeWatcher = vscode.workspace.onDidChangeTextDocument((e) => {

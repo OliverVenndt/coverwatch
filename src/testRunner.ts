@@ -343,6 +343,7 @@ export class TestRunner {
               test.status = status;
               test.lastResult = testResult;
               test.lastRunTime = Date.now();
+              test.isStale = false;
               break;
             }
           }
@@ -372,6 +373,18 @@ export class TestRunner {
         const status = passMatch ? TestStatus.Passed : TestStatus.Failed;
         const testId = item.testIds.find(id => id.includes(testName))
           ?? `${item.projectPath}::${testName}`;
+
+        // Clear stale flag on the discovered test
+        for (const proj of this.testDiscovery.testProjects.values()) {
+          for (const [id, test] of proj.tests) {
+            if (id === testId || test.fullyQualifiedName === testName) {
+              test.status = status;
+              test.lastRunTime = Date.now();
+              test.isStale = false;
+              break;
+            }
+          }
+        }
 
         this._onTestResult.fire({
           testId,

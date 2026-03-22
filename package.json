@@ -2,7 +2,7 @@
   "name": "dotnet-crunch",
   "displayName": "DotNet Crunch",
   "description": "Continuous testing engine for C#/.NET — inspired by NCrunch. Automatic test execution, per-line coverage gutter markers, impact analysis, and a real-time test sidebar.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "mover-systems",
   "author": {
     "name": "Oliver @ Mover Systems"
@@ -188,6 +188,18 @@
           "type": "boolean",
           "default": false,
           "description": "Run affected tests on every keystroke (with debounce). More responsive but heavier."
+        },
+        "dotnetCrunch.runMode": {
+          "type": "string",
+          "enum": ["automatic", "manual"],
+          "default": "automatic",
+          "description": "Controls whether tests run automatically on file changes or only when triggered manually."
+        },
+        "dotnetCrunch.testScope": {
+          "type": "string",
+          "enum": ["all", "impactOnly"],
+          "default": "impactOnly",
+          "description": "Which tests to run: 'all' runs every test on any change, 'impactOnly' runs only tests affected by the change."
         },
         "dotnetCrunch.maxParallelRuns": {
           "type": "number",

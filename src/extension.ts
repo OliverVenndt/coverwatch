@@ -15,6 +15,15 @@ import { StatusBar } from './statusBar';
 
 let engine: CrunchEngine | undefined;
 
+function extractTestId(arg: unknown): string | undefined {
+  if (typeof arg === 'string') { return arg; }
+  if (arg && typeof arg === 'object' && 'testInfo' in arg) {
+    const testInfo = (arg as { testInfo: { testId?: string } }).testInfo;
+    if (typeof testInfo?.testId === 'string') { return testInfo.testId; }
+  }
+  return undefined;
+}
+
 export function activate(context: vscode.ExtensionContext): void {
   const outputChannel = vscode.window.createOutputChannel('DotNet Crunch');
   const config = loadConfig();
@@ -31,8 +40,14 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('dotnetCrunch.runAll', () => engine?.runAll()),
     vscode.commands.registerCommand('dotnetCrunch.resetCoverage', () => engine?.resetCoverage()),
     vscode.commands.registerCommand('dotnetCrunch.toggleGutter', () => engine?.toggleGutter()),
-    vscode.commands.registerCommand('dotnetCrunch.runTest', (testId: string) => engine?.runSingleTest(testId)),
-    vscode.commands.registerCommand('dotnetCrunch.debugTest', (testId: string) => engine?.debugTest(testId)),
+    vscode.commands.registerCommand('dotnetCrunch.runTest', (arg: unknown) => {
+      const testId = extractTestId(arg);
+      if (testId) { engine?.runSingleTest(testId); }
+    }),
+    vscode.commands.registerCommand('dotnetCrunch.debugTest', (arg: unknown) => {
+      const testId = extractTestId(arg);
+      if (testId) { engine?.debugTest(testId); }
+    }),
     vscode.commands.registerCommand('dotnetCrunch.showDashboard', () => outputChannel.show()),
   );
 
@@ -127,7 +142,7 @@ class CrunchEngine implements vscode.Disposable {
   }
 
   private wireEvents(): void {
-    // File changed → impact analysis → enqueue tests
+    // File changed → mark stale → optionally enqueue tests
     this.fileWatcher.onFileChanged(({ filePath, oldContent, newContent }) => {
       if (this.state !== EngineState.Running && this.state !== EngineState.Busy) { return; }
 
@@ -135,11 +150,30 @@ class CrunchEngine implements vscode.Disposable {
       const impact = this.impactAnalyzer.analyzeChange(filePath, changedLines);
 
       if (impact.affectedTestIds.length > 0) {
-        this.testRunner.enqueue(
-          impact.affectedTestIds,
-          `${require('path').basename(filePath)}: ${impact.reason}`,
-        );
-        this.setState(EngineState.Busy);
+        // Mark affected tests as stale
+        for (const testId of impact.affectedTestIds) {
+          const test = this.testDiscovery.findTestById(testId);
+          if (test) { test.isStale = true; }
+        }
+        this.testTreeProvider.refresh();
+        this.codeLensProvider.refresh();
+
+        // Only auto-run in automatic mode
+        if (this.config.runMode === 'automatic') {
+          let testIds: string[];
+          if (this.config.testScope === 'all') {
+            const projectPath = this.testDiscovery.findProjectForFile(filePath);
+            const project = projectPath ? this.testDiscovery.testProjects.get(projectPath) : undefined;
+            testIds = project ? Array.from(project.tests.keys()) : impact.affectedTestIds;
+          } else {
+            testIds = impact.affectedTestIds;
+          }
+          this.testRunner.enqueue(
+            testIds,
+            `${require('path').basename(filePath)}: ${impact.reason}`,
+          );
+          this.setState(EngineState.Busy);
+        }
       }
     });
 

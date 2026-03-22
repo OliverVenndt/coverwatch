@@ -35,6 +35,7 @@ export interface TestInfo {
   status: TestStatus;
   lastResult?: TestResult;
   lastRunTime?: number;
+  isStale?: boolean;
 }
 
 // ── Coverage ─────────────────────────────────────────────────────────
@@ -111,6 +112,8 @@ export interface CrunchConfig {
   debounceMs: number;
   runOnSave: boolean;
   runOnChange: boolean;
+  runMode: 'automatic' | 'manual';
+  testScope: 'all' | 'impactOnly';
   maxParallelRuns: number;
   coverageThreshold: number;
   excludePatterns: string[];
@@ -127,6 +130,8 @@ export function loadConfig(): CrunchConfig {
     debounceMs: cfg.get<number>('debounceMs', 500),
     runOnSave: cfg.get<boolean>('runOnSave', true),
     runOnChange: cfg.get<boolean>('runOnChange', false),
+    runMode: cfg.get<'automatic' | 'manual'>('runMode', 'automatic'),
+    testScope: cfg.get<'all' | 'impactOnly'>('testScope', 'impactOnly'),
     maxParallelRuns: cfg.get<number>('maxParallelRuns', 2),
     coverageThreshold: cfg.get<number>('coverageThreshold', 80),
     excludePatterns: cfg.get<string[]>('excludePatterns', ['**/obj/**', '**/bin/**', '**/Migrations/**']),

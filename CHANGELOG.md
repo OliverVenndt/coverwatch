@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0] - 2026-03-22
+
+### Added
+
+- **Run mode setting** — choose between `automatic` (tests run on file change) or `manual` (tests only run when triggered) via `dotnetCrunch.runMode`
+- **Test scope setting** — choose between `impactOnly` (only affected tests) or `all` (every test in the project) via `dotnetCrunch.testScope`
+- **Stale test indicators** — tests whose source changed but haven't re-run show faded icons (outline pass / warning triangle) with a "stale" label
+- **Click-to-navigate** — clicking a test in the sidebar opens the source file at the test method
+- **Source location resolution** — test discovery now scans `.cs` files to populate source file and line info
+
+### Fixed
+
+- **Tree view Run/Debug buttons** — fixed `t.split is not a function` error when clicking inline Run or Debug buttons in the test panel
+
 ## [1.0.0] - 2026-03-22
 
 ### Added

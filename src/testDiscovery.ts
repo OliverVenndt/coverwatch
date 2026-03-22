@@ -75,7 +75,7 @@ export class TestDiscovery {
       proc.stdout.on('data', (d) => { stdout += d.toString(); });
       proc.stderr.on('data', (d) => { stderr += d.toString(); });
 
-      proc.on('close', (code) => {
+      proc.on('close', async (code) => {
         if (code !== 0) {
           // --no-build might fail if not built; retry with build
           logVerbose(`--list-tests --no-build failed (code ${code}), retrying with build...`);
@@ -85,6 +85,7 @@ export class TestDiscovery {
 
         const tests = this.parseTestList(stdout, project);
         project.tests = new Map(tests.map(t => [t.testId, t]));
+        await this.resolveSourceLocations(projectPath);
         log(`Found ${tests.length} tests in ${project.name}`);
         resolve(tests);
       });
@@ -109,9 +110,10 @@ export class TestDiscovery {
       let stdout = '';
       proc.stdout.on('data', (d) => { stdout += d.toString(); });
 
-      proc.on('close', () => {
+      proc.on('close', async () => {
         const tests = this.parseTestList(stdout, project);
         project.tests = new Map(tests.map(t => [t.testId, t]));
+        await this.resolveSourceLocations(projectPath);
         log(`Found ${tests.length} tests in ${project.name} (with build)`);
         resolve(tests);
       });
@@ -203,6 +205,102 @@ export class TestDiscovery {
       }
     }
     return all;
+  }
+
+  /**
+   * Find a test by its ID across all projects.
+   */
+  findTestById(testId: string): TestInfo | undefined {
+    for (const proj of this.projects.values()) {
+      const test = proj.tests.get(testId);
+      if (test) { return test; }
+    }
+    return undefined;
+  }
+
+  /**
+   * Scan .cs source files to resolve sourceFile and sourceLine for discovered tests.
+   */
+  private async resolveSourceLocations(projectPath: string): Promise<void> {
+    const project = this.projects.get(projectPath);
+    if (!project || project.tests.size === 0) { return; }
+
+    const projectDir = path.dirname(projectPath);
+
+    // Build lookup: className -> [TestInfo] for unresolved tests
+    const unresolvedByClass = new Map<string, TestInfo[]>();
+    for (const test of project.tests.values()) {
+      if (!test.sourceFile && test.className) {
+        if (!unresolvedByClass.has(test.className)) {
+          unresolvedByClass.set(test.className, []);
+        }
+        unresolvedByClass.get(test.className)!.push(test);
+      }
+    }
+
+    if (unresolvedByClass.size === 0) { return; }
+
+    const pattern = new vscode.RelativePattern(projectDir, '**/*.cs');
+    const csFiles = await vscode.workspace.findFiles(pattern, '{**/obj/**,**/bin/**}');
+
+    for (const fileUri of csFiles) {
+      const fileBytes = await vscode.workspace.fs.readFile(fileUri);
+      const content = fileBytes.toString();
+      const lines = content.split('\n');
+
+      // Find class declarations and their line positions
+      const classPositions: { name: string; line: number }[] = [];
+      for (let i = 0; i < lines.length; i++) {
+        const match = lines[i].match(/class\s+(\w+)/);
+        if (match) {
+          classPositions.push({ name: match[1], line: i });
+        }
+      }
+
+      for (let ci = 0; ci < classPositions.length; ci++) {
+        const cls = classPositions[ci];
+        const testsForClass = unresolvedByClass.get(cls.name);
+        if (!testsForClass || testsForClass.length === 0) { continue; }
+
+        const endLine = ci < classPositions.length - 1
+          ? classPositions[ci + 1].line
+          : lines.length;
+
+        // Scan for method declarations within this class
+        for (let i = cls.line; i < endLine; i++) {
+          const methodMatch = lines[i].match(
+            /(?:public|private|protected|internal)\s+(?:static\s+)?(?:async\s+)?(?:\w+(?:<[^>]+>)?)\s+(\w+)\s*\(/
+          );
+          if (!methodMatch) { continue; }
+
+          const methodName = methodMatch[1];
+          const matching = testsForClass.filter(t => {
+            const base = t.methodName.includes('(')
+              ? t.methodName.substring(0, t.methodName.indexOf('('))
+              : t.methodName;
+            return base === methodName;
+          });
+
+          for (const test of matching) {
+            test.sourceFile = fileUri.fsPath;
+            test.sourceLine = i + 1; // 1-based
+          }
+        }
+
+        // Remove fully resolved
+        const remaining = testsForClass.filter(t => !t.sourceFile);
+        if (remaining.length === 0) {
+          unresolvedByClass.delete(cls.name);
+        } else {
+          unresolvedByClass.set(cls.name, remaining);
+        }
+      }
+
+      if (unresolvedByClass.size === 0) { break; }
+    }
+
+    const resolvedCount = Array.from(project.tests.values()).filter(t => t.sourceFile).length;
+    logVerbose(`Resolved source locations for ${resolvedCount}/${project.tests.size} tests in ${project.name}`);
   }
 
   updateConfig(config: CrunchConfig): void {
