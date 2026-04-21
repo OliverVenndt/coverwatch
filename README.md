@@ -8,16 +8,7 @@ Coverwatch brings the continuous testing workflow to VS Code for C#/.NET. It wat
 
 ## See It In Action
 
-```
- ✅  │  public decimal CalculateDiscount(Order order)
- ✅  │  {
- ✅  │      if (order.Total > 100)
- 🔴  │          return order.Total * 0.15m;  ← test expects 0.10
- ⚫  │      if (order.IsFirstOrder)           ← no test covers this
- ⚫  │          return order.Total * 0.05m;
- ✅  │      return 0;
- ✅  │  }
-```
+![Coverwatch sidebar showing test tree, processing queue, metrics, and coverage stats](media/screenshot.png)
 
 Every line gets a marker. Green means covered and passing. Red means a test is failing on that line. Gray means nothing tests it. Hover any marker to see exactly which tests touch that line.
 
